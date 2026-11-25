@@ -55,7 +55,7 @@
 | 필드 | 의미 | 비고 |
 |---|---|---|
 | `success` | 업무 처리 성공 여부 | boolean |
-| `code` | 성공 `OK`, 업무 예외는 `도메인_상황` 키(예: `COMMON_INVALID_INPUT`, 3.1.1), 시스템 오류는 에러 코드(예: `E0493`, 5장) | |
+| `code` | 성공 `OK`, 업무 예외는 `도메인_상황` 키(예: `COM_INVALID_INPUT`, 3.1.1), 시스템 오류는 에러 코드(예: `E0493`, 5장) | |
 | `message` | 사용자 표시 메시지 (로그용 상세 내용 제외, 03 3.3) | |
 | `traceId` | 추적 ID (03 4.2 로그와 동일 값) | |
 | `data` | 응답 본문. 단건은 객체, 목록은 `{대상}List` | |
@@ -71,7 +71,7 @@
 ```json
 {
   "success": false,
-  "code": "COMMON_INVALID_INPUT",
+  "code": "COM_INVALID_INPUT",
   "message": "입력값을 다시 확인해주세요.",
   "traceId": "20261125-0001",
   "data": null,
@@ -82,15 +82,15 @@
     "errors": [
       {
         "field": "email",
-        "rejectedValue": "test@",
-        "reason": "INVALID_EMAIL_FORMAT",
-        "message": "올바른 이메일 형식이 아닙니다."
+        "rejectedValue": "",
+        "reason": "COM_NOT_BLANK",
+        "message": "필수 입력 항목입니다."
       },
       {
         "field": "age",
         "rejectedValue": 15,
-        "reason": "UNDER_MINIMUM_AGE",
-        "message": "만 19세 이상만 가입할 수 있습니다."
+        "reason": "COM_MIN_VALUE",
+        "message": "최소값 이상이어야 합니다."
       }
     ]
   }
@@ -98,7 +98,7 @@
 ```
 | 필드 | 의미 |
 |---|---|
-| `code` | 예외의 `도메인_상황` 키. `UPPER_SNAKE_CASE` (예: `COMMON_INVALID_INPUT`) |
+| `code` | 예외의 `도메인_상황` 키. `UPPER_SNAKE_CASE` (예: `COM_INVALID_INPUT`) |
 | `message` | 사용자 표시용 요약 메시지 |
 | `exception.type` | 예외 유형 이름 (예: `ValidationException`) |
 | `exception.detail` | 예외 상세 설명(개발·운영 확인용 요약, 내부 정보 비노출) |
@@ -106,26 +106,27 @@
 | `exception.errors[]` | 필드별 오류 목록. UI 에서 필드 단위 표시에 사용 |
 | `errors[].field` | 오류 필드명 (요청 JSON 필드명, camelCase) |
 | `errors[].rejectedValue` | 거부된 입력값 |
-| `errors[].reason` | **필드별 사유 코드** (`UPPER_SNAKE_CASE`, 예: `MIN_VALUE`, `NOT_BLANK`, `INVALID_EMAIL_FORMAT`) |
+| `errors[].reason` | **필드별 사유 코드** (`{도메인}_{사유}`, `UPPER_SNAKE_CASE`, 예: `COM_MIN_VALUE`, `COM_NOT_BLANK`) |
 | `errors[].message` | 필드 오류 메시지(사용자 표시용) |
 
 **키 체계**
-- 예외 코드: `{도메인}_{상황}` — 예: `COMMON_INVALID_INPUT`. 도메인은 `COMMON`(공통) 또는 업무 도메인 약어(02-2 사전 약어, 프로젝트별 ✏️).
-- 필드 사유 코드: 상황을 나타내는 `UPPER_SNAKE_CASE` — 예: `MIN_VALUE`, `NOT_BLANK`, `INVALID_EMAIL_FORMAT`, `UNDER_MINIMUM_AGE`.
-- 예외 코드·사유 코드의 메시지는 메시지 파일(5.2)에서 키로 관리하며 문구를 하드코딩하지 않는다.
+- 예외 코드: `{도메인}_{상황}` — 예: `COM_INVALID_INPUT`. 도메인은 `COM`(공통) 또는 프로젝트별로 정의한 업무 도메인 약어(예: `FIS`) ✏️.
+- 필드 사유 코드: 예외 코드와 같은 `{도메인}_{사유}` 형식 — 예: `COM_NOT_BLANK`, `COM_MIN_VALUE`.
+- 예외 코드·사유 코드의 메시지는 `exception-codes.yml`(아래)에서 키로 관리하며 문구를 하드코딩하지 않는다.
 
 **규칙**
 - 업무 예외는 HTTP 200 으로 응답하고 `success: false` 와 `exception` 으로 구분한다. (3.2)
 - `rejectedValue` 에 **비밀번호·주민등록번호 등 민감정보 원문을 담지 않는다.** 해당 필드는 값을 비우거나 마스킹한다. (03 5.3)
 - `errors` 는 필드와 무관한 업무 예외일 때 비어 있을 수 있다. (이 경우 `field` 대신 `message` 로 표현)
-- **예외 코드(`도메인_상황`)·필드 사유 코드·도메인 약어 목록은 프로젝트별로 생성**하고, YAML 파일 등으로 **프로젝트 폴더에 별도 관리**한다. (파일명 예: `exception-codes.yml` [제안]) ✏️
+- **예외 코드(`도메인_상황`)·필드 사유 코드·도메인 약어 목록은 프로젝트별로 생성**하고, YAML 파일 등으로 **프로젝트 폴더에 별도 관리**한다. (파일명: `exception-codes.yml`) ✏️
+- 파일 형식은 **Key-Value 이며 Value 는 객체가 아닌 순수 문자열**이다. 예외 코드와 필드 사유 코드를 같은 파일에 나란히 둔다.
+- 메시지에는 `{0}`, `{1}` 형식의 순번 치환 자리를 쓸 수 있으며 치환 값은 서버에서 전달한다.
 ```yaml
 # exception-codes.yml 예시
-COMMON_INVALID_INPUT:
-  message: "입력값을 다시 확인해주세요."
-reasons:
-  NOT_BLANK: "필수 입력 항목입니다."
-  MIN_VALUE: "최소값 이상이어야 합니다."
+COM_INVALID_INPUT: "입력값을 다시 확인해주세요."
+COM_NOT_BLANK: "필수 입력 항목입니다."
+COM_MIN_VALUE: "최소값 이상이어야 합니다."
+FIS_NO_TOKEN: "선택한 {0}을 분석하기 위한 토큰이 부족합니다"
 ```
 
 ### 3.2 HTTP 상태코드 🔒
@@ -183,7 +184,7 @@ reasons:
 |---|---|---|
 | 저장 | 메시지 파일(YAML 등). 환경별로 분리하지 않고 소스와 함께 버전 관리 | 🔒 |
 | 파일 구성 | 공통 `messages-cm.yml`, 업무별 `messages-{기능코드 소문자}.yml` | [제안] |
-| 키 | 시스템 오류는 에러 코드(`E0493`), 업무 예외는 예외 코드(`COMMON_INVALID_INPUT`)와 필드 사유 코드(`MIN_VALUE`)를 키로 사용 (3.1.1) | 🔒 |
+| 키 | 시스템 오류는 에러 코드(`E0493`), 업무 예외는 예외 코드(`COM_INVALID_INPUT`)와 필드 사유 코드(`COM_MIN_VALUE`)를 키로 사용 (3.1.1, `exception-codes.yml`) | 🔒 |
 | 사용 | 코드에 문구 하드코딩 금지, **메시지 코드로만 참조** (03 3.3) | 🔒 |
 | 사용자 메시지 | 사용자가 취해야 할 조치를 포함, 내부 정보 비노출 | 🔒 |
 | 로그 메시지 | 03 4장 기준, 사용자 메시지와 별도 관리 | 🔒 |
