@@ -14,7 +14,8 @@ DB·API·공통코드·에러코드·화면 설계 산출물의 작성 기준을
 - 인덱스 설계 기준, 마이그레이션 도구 [결정 필요]
 
 ### 2. API 설계
-- RESTful 원칙, 상태코드 사용 기준
+- HTTP 메서드는 `GET`/`POST` 만 사용하며 동작은 기능명 동사로 표현 (02-naming-convention 4장). RESTful 리소스 설계는 적용하지 않음
+- HTTP 상태코드 사용 기준 [결정 필요]
 - 요청/응답 공통 포맷
   ```json
   { "success": true, "code": "OK", "message": "", "data": {} }

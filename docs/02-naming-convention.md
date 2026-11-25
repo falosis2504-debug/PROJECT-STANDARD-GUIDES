@@ -44,14 +44,7 @@
 | Entity/VO | `Entity` / `Vo` | |
 
 ### 메서드 동사 표준
-| 동작 | 동사 | 비고 |
-|---|---|---|
-| 단건 조회 | `get` / `find` | 차이 정의 [결정 필요] |
-| 목록 조회 | `list` / `search` | |
-| 등록 | `create` / `insert` | |
-| 수정 | `update` | |
-| 삭제 | `delete` | |
-| 존재 확인 | `exists` | |
+API 기능명과 동일한 **표준 동사 사전(4.3)** 을 코드의 메서드명에도 사용한다. (`select`, `insert`, `update`, `delete`, `save`, `check`, `verify`, `execute` 등) `get`, `find`, `create`, `remove` 등 유사 동사는 사용하지 않는다.
 
 ## 3. 데이터베이스
 | 대상 | 규칙 | 예시 |
@@ -77,61 +70,90 @@
 언어·프레임워크와 무관한 규칙이다. 🔒 고정 / ✏️ 가변 / [제안]은 확정 전 안.
 파일 명명규칙(5장)과 추적 가능해야 하므로 **URL ↔ API ID(접두부 9자) ↔ 기능코드 폴더**를 대장으로 연결한다.
 
-### 4.1 URL 구조
+### 4.1 HTTP 메서드 🔒
+보안(WAF) 및 인프라 호환성을 위해 **`GET` 과 `POST` 만 사용**한다. `PUT`, `DELETE`, `PATCH` 등 그 외 메서드는 사용 금지.
+
+| 메서드 | 용도 |
+|---|---|
+| `GET` | 단순 조건 조회, 파일 다운로드 |
+| `POST` | 다중/복합 조건 검색(Request Body 필요 시), 등록, 수정, 삭제, 실행, 업로드 |
+
+- 동작의 의미는 메서드가 아니라 **기능명의 동사**(4.3)로 표현한다.
+
+### 4.2 URL 구조 🔒
 ```
-/api/{버전}/{기능코드}/{리소스}[/{식별자}][/{하위리소스}]
- 예) /api/v1/is/indicator-combos/{comboId}/diagnoses
+/api/{기능코드2}/{기능명}
+ 예) POST /api/is/selectUserStrategy
 ```
-| 구성 | 규칙 | 구분 | 예시 |
-|---|---|---|---|
-| 접두 | `/api` 고정 | 🔒 | `/api` |
-| 버전 | `v{정수}`, 호환 불가 변경 시에만 증가 | 🔒 | `v1` |
-| 기능코드 | 5.3 기능코드를 **소문자**로 사용 | 🔒 | `is`, `am` |
-| 리소스 | 소문자 kebab-case, 복수 명사, 영문 | 🔒 | `indicator-combos` |
-| 식별자 | path 변수, 중괄호 표기 | 🔒 | `{comboId}` |
-| 리소스 이름 값 | 업무 분석 후 프로젝트별 정의 | ✏️ | |
-
-- 첫 세그먼트 이후 계층은 **3단계 이내** 권장 [제안].
-- URL에 동사 금지. 동작은 HTTP 메서드로 표현한다. (예외: 4.3 액션)
-- URL에 확장자(`.json` 등), 대문자, 언더스코어, 한글, 파일명 규칙의 ID(`FRISB0001`) 사용 금지.
-- 마지막 `/` 는 붙이지 않는다.
-
-### 4.2 HTTP 메서드
-| 메서드 | 용도 | 예시 |
+| 구성 | 규칙 | 예시 |
 |---|---|---|
-| GET | 조회 (목록/단건), 본문 없음, 부작용 없음 | `GET /api/v1/is/indicator-combos` |
-| POST | 등록 | `POST /api/v1/is/indicator-combos` |
-| PUT | 전체 수정 | `PUT /api/v1/is/indicator-combos/{comboId}` |
-| PATCH | 부분 수정 | `PATCH /api/v1/is/indicator-combos/{comboId}` |
-| DELETE | 삭제 | `DELETE /api/v1/is/indicator-combos/{comboId}` |
+| 접두 | `/api` 고정 | `/api` |
+| 기능코드 | 5.3 기능코드 2자리, **소문자** | `is`, `am` |
+| 기능명 | `{동사}{Target}` (4.3) | `selectUserStrategy` |
 
-### 4.3 액션(동사) 예외 [제안]
-CRUD로 표현하기 어려운 처리는 마지막 세그먼트에 **kebab-case 동사**를 쓰고 `POST` 를 사용한다.
-- 예) `POST /api/v1/at/transfers/{transferId}/cancel`, `POST /api/v1/es/screenings/execute`
-- 조회성 복합 조건 검색은 `GET` + 쿼리, 조건이 길면 `POST /{리소스}/search` 허용 [제안].
+- 경로는 `/api/{기능코드2}/{기능명}` **2단계로 고정**한다. 하위 리소스 경로·path 변수는 사용하지 않고, 식별자·조건은 쿼리(GET) 또는 Request Body(POST)로 전달한다.
+- URL에 확장자, 한글, 언더스코어, 끝 `/`, 파일 명명규칙의 ID(`FRISB0001`)를 쓰지 않는다.
+- 버전은 URL에 두지 않는다. 호환되지 않는 변경은 기능명 또는 헤더로 구분한다. [제안, 결정 필요]
 
-### 4.4 쿼리 파라미터 / 본문
-| 대상 | 규칙 | 구분 |
+### 4.3 기능명 규칙 🔒
+**형식**: `{동사}{Target}` — 동사는 소문자 camelCase 의 첫 단어, `Target` 은 PascalCase.
+
+1. 사용하는 영단어는 **단수형만** 사용한다. (`user`, `transfer`, `asset`, `stock`)
+2. `{Target}`: PascalCase **단수형**. 복수형 `s` 사용 금지. 다건이면 접미사 `List` 를 붙인다. (`UserStrategy`, `ScreenerList`)
+3. 아래 **표준 동사 사전**의 동사만 사용한다. 유사 동사(`get`, `find`, `fetch`, `create`, `remove` 등) 혼용 금지.
+
+#### 표준 동사 사전
+| 구분 | 동사 / 형식 | 예시 |
 |---|---|---|
-| 쿼리 파라미터 | camelCase | [제안] |
-| JSON 필드 | camelCase | [제안] |
-| 날짜/시간 | 날짜 `yyyy-MM-dd`, 일시 ISO-8601 | [제안] |
-| 불리언 | `true`/`false` (문자 `Y/N` 금지) | [제안] |
-| 목록 조회 공통 | `page`, `size`, `sort` (`sort=field,asc`) | [제안] |
+| 조회 | 단건 `select{Target}` | `selectUser` |
+| | 목록/조건 `select{Target}List` | `selectScreenerList` |
+| | 건수 `select{Target}Count` | |
+| | 코드/요약 `select{Target}CodeList`, `select{Target}Summary` | |
+| 등록·수정·삭제·저장 | 단건 `insert{Target}`, `update{Target}`, `delete{Target}` | |
+| | 다건 일괄 `insert{Target}List`, `update{Target}List`, `delete{Target}List` | |
+| | Upsert(등록+수정, 그리드 일괄 저장) `save{Target}`, `save{Target}List` | `saveUserStrategy` |
+| 상태 변경 | 단순 상태 변경 `update{Target}Status` | |
+| | 승인/반려/취소 `approve{Target}`, `reject{Target}`, `cancel{Target}` | |
+| 검증 | 중복/한도/유효성 사전 검증 `checkDuplicate{Target}`, `check{Target}` | |
+| | 본인/비밀번호 인증 `verify{Target}` | |
+| 비즈니스 실행 | 복합 금융/트랜잭션 실행 `execute{Target}` | `executeTransfer` |
+| | 시뮬레이션/배치 실행 `simulate{Target}`, `execute{Target}Batch` | |
+| 파일/엑셀 | 일반 파일 `upload{Target}File`, `download{Target}File` | |
+| | 엑셀 `upload{Target}Excel`, `download{Target}Excel`, `download{Target}Template` | |
+| 외부 연동/알림 | 데이터 동기화 `sync{Target}` | |
+| | 알림/문자 발송 `send{Target}` | |
 
-- 요청/응답 객체명은 5장 `Dto`(`ReqDto`/`ResDto`) 규칙을 따른다. JSON 필드명과 DTO 필드명은 같은 이름을 사용한다.
-- 공통 응답 포맷·에러 응답은 04-design-standard.md 에서 정의하며, 에러 코드는 인터페이스 ID 기준(6장)이다.
+- 사전에 없는 동사가 필요하면 임의로 만들지 않고 이 사전에 먼저 등록(변경 절차는 00-governance)한 뒤 사용한다.
 
-### 4.5 API 대장 (URL ↔ ID 매핑) ✏️
-프로젝트별로 대장을 작성하여 URL 과 파일명 규칙의 ID 를 연결한다.
+### 4.4 메서드 선택 기준 🔒
+| 조건 | 메서드 |
+|---|---|
+| 단순 조건 조회(`select*`), 파일 다운로드(`download*`) | `GET` |
+| 복합 조건 검색(Request Body 필요), `insert/update/delete/save`, 상태 변경, 검증, 실행, `upload*` 등 그 외 모두 | `POST` |
 
+### 4.5 최종 예시
+| 메서드 | URL | 설명 |
+|---|---|---|
+| POST | `/api/is/selectUserStrategy` | 고객의 투자전략 정보 불러오기 |
+| POST | `/api/is/saveUserStrategy` | 고객의 투자전략 정보 저장하기 |
+
+### 4.6 쿼리/본문 규칙 [제안]
+| 대상 | 규칙 |
+|---|---|
+| 쿼리 파라미터 / JSON 필드 | camelCase |
+| 날짜/시간 | 날짜 `yyyy-MM-dd`, 일시 ISO-8601 |
+| 목록 조회 공통 | `page`, `size`, `sort` |
+- 요청/응답 객체명은 5장 `Dto`(`ReqDto`/`ResDto`) 규칙을 따른다. 공통 응답·에러 응답은 04-design-standard.md, 에러 코드는 인터페이스 ID 기준(6장).
+
+### 4.7 API 대장 (URL ↔ ID 매핑) ✏️
 | API ID(접두부) | 메서드 | URL | 한글명 | Controller | 상태 |
 |---|---|---|---|---|---|
-| FRISB0100 | GET | `/api/v1/is/indicator-combos` | 지표조합 목록 | `IS/Controller/FRISB0100Controller` | |
-| FRISB0101 | POST | `/api/v1/is/indicator-combos/{comboId}/diagnoses` | 지표조합 진단 | `IS/Controller/FRISB0101Controller` | |
+| FRISB0001 | POST | `/api/is/selectUserStrategy` | 투자전략 조회 | `IS/Controller/FRISB0001Controller` | |
+| FRISB0002 | POST | `/api/is/saveUserStrategy` | 투자전략 저장 | `IS/Controller/FRISB0002Controller` | |
 
-- 일련번호의 상위 2자리(중분류)는 하나의 **리소스**에 대응시키는 것을 원칙으로 한다. (예: `IS01xx` = `indicator-combos`) [제안]
 - 대장 위치는 프로젝트별 [결정 필요].
+- Controller 클래스 내 메서드명은 기능명과 동일하게 한다. [제안]
+- 한 Controller(API ID)가 여러 URL 을 가질 수 있는지(1:1 / 1:N)는 [결정 필요].
 
 ## 5. 파일 명명규칙 (확정안, 언어·프레임워크 독립)
 
