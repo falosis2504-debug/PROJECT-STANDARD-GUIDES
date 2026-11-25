@@ -13,8 +13,8 @@ SI 개발사업의 통상적인 표준화 산출물 체계(공통기준 → 명�
 
 | 단계 | 문서 | 목표 | 완료 기준 | 상태 |
 |---|---|---|---|---|
-| 0 | [00-governance.md](00-governance.md) | 문서 체계·용어·변경관리 기준 수립 | 문서 상태/버전 규칙, 승인 절차 확정 | ⬜ |
-| 1 | [01-common-principles.md](01-common-principles.md) | 프로젝트 공통 원칙·기술스택·아키텍처 기준 | 기술스택 표, 아키텍처 원칙, 환경 구성 확정 | ⬜ |
+| 0 | [00-governance.md](00-governance.md) | 문서 체계·용어·변경관리 기준 수립 | 문서 상태/버전 규칙, 승인 절차 확정 | 🟨 |
+| 1 | [01-common-principles.md](01-common-principles.md) | 프로젝트 공통 원칙·기술스택·아키텍처 기준 | 기술스택 표, 아키텍처 원칙, 환경 구성 확정 | 🟨 |
 | 2 | [02-naming-convention.md](02-naming-convention.md) | **명명규칙** (코드·DB·API·파일·ID) | 대상별 규칙표 + 예시 + 금지 사례 | 🟨 |
 | 2-1 | [02-1-db-profile-oracle.md](02-1-db-profile-oracle.md) | DB 프로파일(Oracle): 길이·타입·감사 컬럼 | 도메인/감사 컬럼 확정 | 🟨 |
 | 2-2 | [02-2-standard-term-dictionary.md](02-2-standard-term-dictionary.md) | 표준 용어/약어 사전 | 프로젝트 추가 단어 등록 | 🟨 |
