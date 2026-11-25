@@ -23,8 +23,8 @@ SI 개발사업의 통상적인 표준화 산출물 체계(공통기준 → 명�
 | 4 | [04-design-standard.md](04-design-standard.md) | DB·API·공통코드·에러코드·화면 설계 표준 | 설계 산출물 작성 기준과 예시 | 🟨 |
 | 5 | [05-scm-release.md](05-scm-release.md) | Git 브랜치/커밋/리뷰/릴리스/환경 | 브랜치 전략, 커밋 규칙, 배포 절차 확정 | 🟨 |
 | 6 | [06-quality-test.md](06-quality-test.md) | 단계별 테스트·코드리뷰·정적분석 기준 | 테스트 단계 정의, 리뷰 체크리스트, 품질 게이트 | 🟨 |
-| 8 | [08-deliverables-structure.md](08-deliverables-structure.md) | 산출물 폴더 구조 (SI 표준) | 업무 폴더(기능코드별) 생성 | 🟨 |
 | 7 | [07-kickoff-checklist.md](07-kickoff-checklist.md) | 신규 프로젝트 킥오프 체크리스트·템플릿 | 이 문서 세트를 신규 프로젝트에 적용하는 절차 | 🟨 |
+| 8 | [08-deliverables-structure.md](08-deliverables-structure.md) | 산출물 폴더 구조 (SI 표준) | 업무 폴더(기능코드별) 생성 | 🟨 |
 
 상태 표기: ⬜ 미착수 / 🟨 초안 / 🟦 검토 / ✅ 확정
 
