@@ -20,7 +20,7 @@
 - 식별자는 **영문**을 사용하고, 약어는 표준 용어/약어 사전(02-2)에 등록된 것만 사용한다.
 - 한글 발음 영문 표기(예: `sunsu`) 금지.
 - 의미 없는 접두/접미(`my`, `tmp`, `data`, `info` 남용) 지양.
-- 식별자 길이는 **40자 이내** 권장. [제안]
+- 식별자 길이는 **40자 이내** 권장.
 - 단일 문자 변수는 반복문 인덱스(`i`, `j`)에만 허용한다. 타입을 이름에 넣는 표기(헝가리안)는 사용하지 않는다.
 - 단어는 **단수형**이 원칙이며, 복수는 `List` 접미사로 표현한다. (복수형 `s` 금지, API 4.3 과 동일)
 - 언어 관례와 충돌하는 경우의 예외는 03-coding-convention 에서 정의한다.
@@ -31,7 +31,7 @@
 | 패키지/네임스페이스 | 소문자 | 루트는 프로젝트별 정의(✏️). **기능코드 폴더는 대문자 2자리** 허용(5.7 예외) | `com.falosis.finresearch.IS` |
 | 업무 클래스/파일 | 5장 규칙 | `{시스템2}{기능2}{계층1}{일련번호4}{접미사}` | `FRISB0001Service` |
 | 공통/설정 클래스 | PascalCase | 명사형, 5장 대상 아님(`common`, `config`) | `BsUtils`, `MiniConfig` |
-| 인터페이스 | PascalCase | 접두 `I` 사용하지 않음 [제안] | |
+| 인터페이스 | PascalCase | 접두 `I` 사용하지 않음 | |
 | 메서드/함수 | camelCase | `{표준 동사}{Target}` 형식 (아래 참조) | `selectUserStrategy` |
 | 변수/필드 | camelCase | 명사형, 컬렉션은 `List` 접미사 | `strategyList` |
 | 상수 | UPPER_SNAKE_CASE | | `MAX_RETRY_COUNT` |
@@ -44,9 +44,9 @@
 ### 메서드 동사 표준 🔒
 API 기능명과 동일한 **표준 동사 사전(4.3)** 을 코드의 메서드명에도 사용한다. (`select`, `insert`, `update`, `delete`, `save`, `check`, `verify`, `execute` 등) `get`, `find`, `create`, `remove` 등 유사 동사는 사용하지 않는다.
 - Controller 메서드명 = 기능명(4.6). Service·Mapper 메서드도 같은 사전의 동사를 사용한다.
-- 단순 속성 접근자(`getter`/`setter`)는 언어·프레임워크 관례를 따르며 이 규칙의 예외이다. [제안]
+- 단순 속성 접근자(`getter`/`setter`)는 언어·프레임워크 관례를 따르며 이 규칙의 예외이다.
 
-### DB 컬럼 ↔ 코드 필드 매핑 [제안]
+### DB 컬럼 ↔ 코드 필드 매핑
 - DB 컬럼(`UPPER_SNAKE_CASE`)은 코드 필드(`camelCase`)로 단어별 변환한다. 약어는 그대로 유지한다.
   - `CUST_ID` → `custId`, `FRST_REG_DTM` → `frstRegDtm`, `USE_YN` → `useYn`
 - 필드 이름을 임의로 풀어쓰지 않는다. (`custId` 를 `customerId` 로 쓰지 않음)
