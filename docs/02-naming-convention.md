@@ -74,13 +74,64 @@
 | 여부 | yn | yn | CHAR(1) |
 
 ## 4. API / URL
-| 대상 | 규칙 | 예시 |
+언어·프레임워크와 무관한 규칙이다. 🔒 고정 / ✏️ 가변 / [제안]은 확정 전 안.
+파일 명명규칙(5장)과 추적 가능해야 하므로 **URL ↔ API ID(접두부 9자) ↔ 기능코드 폴더**를 대장으로 연결한다.
+
+### 4.1 URL 구조
+```
+/api/{버전}/{기능코드}/{리소스}[/{식별자}][/{하위리소스}]
+ 예) /api/v1/is/indicator-combos/{comboId}/diagnoses
+```
+| 구성 | 규칙 | 구분 | 예시 |
+|---|---|---|---|
+| 접두 | `/api` 고정 | 🔒 | `/api` |
+| 버전 | `v{정수}`, 호환 불가 변경 시에만 증가 | 🔒 | `v1` |
+| 기능코드 | 5.3 기능코드를 **소문자**로 사용 | 🔒 | `is`, `am` |
+| 리소스 | 소문자 kebab-case, 복수 명사, 영문 | 🔒 | `indicator-combos` |
+| 식별자 | path 변수, 중괄호 표기 | 🔒 | `{comboId}` |
+| 리소스 이름 값 | 업무 분석 후 프로젝트별 정의 | ✏️ | |
+
+- 첫 세그먼트 이후 계층은 **3단계 이내** 권장 [제안].
+- URL에 동사 금지. 동작은 HTTP 메서드로 표현한다. (예외: 4.3 액션)
+- URL에 확장자(`.json` 등), 대문자, 언더스코어, 한글, 파일명 규칙의 ID(`FRISB0001`) 사용 금지.
+- 마지막 `/` 는 붙이지 않는다.
+
+### 4.2 HTTP 메서드
+| 메서드 | 용도 | 예시 |
 |---|---|---|
-| URL 경로 | kebab-case, 소문자, 복수 명사 | `/api/v1/orders/{orderId}` |
-| 쿼리 파라미터 | camelCase / snake_case [결정 필요] | |
-| JSON 필드 | camelCase [결정 필요] | |
-| HTTP 메서드 | GET 조회, POST 등록, PUT/PATCH 수정, DELETE 삭제 | |
-| 버전 | 경로 `/v1` | |
+| GET | 조회 (목록/단건), 본문 없음, 부작용 없음 | `GET /api/v1/is/indicator-combos` |
+| POST | 등록 | `POST /api/v1/is/indicator-combos` |
+| PUT | 전체 수정 | `PUT /api/v1/is/indicator-combos/{comboId}` |
+| PATCH | 부분 수정 | `PATCH /api/v1/is/indicator-combos/{comboId}` |
+| DELETE | 삭제 | `DELETE /api/v1/is/indicator-combos/{comboId}` |
+
+### 4.3 액션(동사) 예외 [제안]
+CRUD로 표현하기 어려운 처리는 마지막 세그먼트에 **kebab-case 동사**를 쓰고 `POST` 를 사용한다.
+- 예) `POST /api/v1/at/transfers/{transferId}/cancel`, `POST /api/v1/es/screenings/execute`
+- 조회성 복합 조건 검색은 `GET` + 쿼리, 조건이 길면 `POST /{리소스}/search` 허용 [제안].
+
+### 4.4 쿼리 파라미터 / 본문
+| 대상 | 규칙 | 구분 |
+|---|---|---|
+| 쿼리 파라미터 | camelCase | [제안] |
+| JSON 필드 | camelCase | [제안] |
+| 날짜/시간 | 날짜 `yyyy-MM-dd`, 일시 ISO-8601 | [제안] |
+| 불리언 | `true`/`false` (문자 `Y/N` 금지) | [제안] |
+| 목록 조회 공통 | `page`, `size`, `sort` (`sort=field,asc`) | [제안] |
+
+- 요청/응답 객체명은 5장 `Dto`(`ReqDto`/`ResDto`) 규칙을 따른다. JSON 필드명과 DTO 필드명은 같은 이름을 사용한다.
+- 공통 응답 포맷·에러 응답은 04-design-standard.md 에서 정의하며, 에러 코드는 인터페이스 ID 기준(6장)이다.
+
+### 4.5 API 대장 (URL ↔ ID 매핑) ✏️
+프로젝트별로 대장을 작성하여 URL 과 파일명 규칙의 ID 를 연결한다.
+
+| API ID(접두부) | 메서드 | URL | 한글명 | Controller | 상태 |
+|---|---|---|---|---|---|
+| FRISB0100 | GET | `/api/v1/is/indicator-combos` | 지표조합 목록 | `IS/Controller/FRISB0100Controller` | |
+| FRISB0101 | POST | `/api/v1/is/indicator-combos/{comboId}/diagnoses` | 지표조합 진단 | `IS/Controller/FRISB0101Controller` | |
+
+- 일련번호의 상위 2자리(중분류)는 하나의 **리소스**에 대응시키는 것을 원칙으로 한다. (예: `IS01xx` = `indicator-combos`) [제안]
+- 대장 위치는 프로젝트별 [결정 필요].
 
 ## 5. 파일 명명규칙 (확정안, 언어·프레임워크 독립)
 
