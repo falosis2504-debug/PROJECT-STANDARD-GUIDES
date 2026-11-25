@@ -87,7 +87,7 @@
 ```
 - 접두부 9자(`시스템 2 + 기능 2 + 계층 1 + 일련번호 4`)는 대문자 영문 + 숫자, 그 뒤에 역할 접미사를 붙인다.
 - 같은 접두부(`FRISB0001`)를 공유하는 파일은 하나의 기능 단위이다. (예: `FRISB0001Controller`, `FRISB0001Service`, `FRISB0001Mapper`, `FRISB0001Dto`)
-- 일련번호는 `시스템+기능+계층` 단위로 0001부터 채번하고, 결번은 재사용하지 않는다.
+- 일련번호(4자리)는 `시스템+기능+계층` 단위로 부여하며 연속일 필요는 없다. (예: `0001`, `0100`, `5000`) 번호 대역 배분 방식은 [결정 필요]. 부여된 번호는 재사용하지 않는다.
 
 ### 5.2 시스템코드 (2자리)
 | 코드 | 시스템 |
@@ -130,7 +130,7 @@
 | Controller | 컨트롤러 | `FRISB0001Controller` |
 | Service | 서비스 | `FRISB0001Service` |
 | Dto | 데이터 전송 객체 (원칙) | `FRISB0001Dto` |
-| Req / Res | 요청/응답 구분이 필요한 경우 | `FRISB0001Req`, `FRISB0001Res` |
+| ReqDto / ResDto | 요청/응답 구분이 필요한 경우 (`Dto` 폴더에 둠) | `FRISB0000ReqDto`, `FRISB0000ResDto` |
 | Mapper | DB 매퍼 | `FRISD0001Mapper` |
 | Repository | 저장소 | `FRISD0001Repository` |
 | Entity | 엔티티 | `FRISD0001Entity` |
@@ -141,12 +141,12 @@
 - **계층 `U`**: 프론트·백엔드 역할 접미사를 모두 사용할 수 있다.
 - **계층 `D`**: `Mapper`, `Repository`, `Entity` 등 DB와 연관된 접미사를 사용할 수 있다.
 - **테스트 파일**: 대상 파일명 뒤에 `Test` 를 붙인다. (`FRISB0001Service` → `FRISB0001ServiceTest`)
-- **요청/응답 객체**: `Dto` 로 통일하는 것이 원칙이며, 필요한 경우에 한해 `Req`, `Res` 로 구분할 수 있다. (`FRISB0001Dto`, 구분 시 `FRISB0001Req` / `FRISB0001Res`)
+- **요청/응답 객체**: `Dto` 로 통일하는 것이 원칙이며, 필요한 경우에 한해 `ReqDto`, `ResDto` 로 구분할 수 있다. (`FRISB0000Dto`, 구분 시 `FRISB0000ReqDto` / `FRISB0000ResDto`) 구분하더라도 `Dto` 폴더에 함께 둔다.
 
 | 계층 | 허용 접미사 |
 |---|---|
 | P | `P`, `M`, `C` (필요 시 추가) |
-| B | `Controller`, `Service`, `Dto`, `Req`, `Res` |
+| B | `Controller`, `Service`, `Dto`, `ReqDto`, `ResDto` |
 | D | `Mapper`, `Repository`, `Entity` 등 DB 연관 접미사 |
 | U | P·B·D 의 접미사 전부 |
 
@@ -172,7 +172,9 @@ com.falosis.finresearch
 │   │   ├─ FRISB0001Service.java
 │   │   └─ FRISB0100Service.java
 │   ├─ Dto
-│   │   └─ FRISB0000Dto.java
+│   │   ├─ FRISB0000Dto.java
+│   │   ├─ FRISB0000ReqDto.java
+│   │   └─ FRISB0000ResDto.java
 │   └─ Mapper
 │       └─ FRISB0000Mapper.java
 └─ AM                              # 기능코드: 자산관리
@@ -186,7 +188,7 @@ com.falosis.finresearch
 | 항목 | 규칙 |
 |---|---|
 | 기능 폴더 | 기능코드 2자리 대문자 (`IS`, `AM` …) |
-| 역할 폴더 | 역할 접미사와 동일 (`Controller`, `Service`, `Dto`, `Mapper`, `Repository`, `Entity`, `Req`, `Res`) |
+| 역할 폴더 | 역할 접미사와 동일 (`Controller`, `Service`, `Dto`, `Mapper`, `Repository`, `Entity`). `ReqDto`/`ResDto` 는 별도 폴더 없이 `Dto` 폴더 사용 |
 | 파일 위치 | `{기능코드}/{역할접미사}/{파일명}` |
 | 폴더-파일 일치 | 파일의 기능코드·접미사가 소속 폴더와 반드시 일치 (`FRISB0001Service` → `IS/Service`) |
 | 일련번호 | 폴더가 달라도 같은 기능 단위는 동일 접두부 사용 (`IS/Controller/FRISB0001Controller`, `IS/Service/FRISB0001Service`) |
