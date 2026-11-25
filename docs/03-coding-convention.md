@@ -1,6 +1,6 @@
 # 03. 코딩 컨벤션
 
-- 상태: **확정** | 버전: 1.1
+- 상태: **확정** | 버전: 1.2
 - 선행: 01(기술스택), 02(명명규칙)
 
 ## 작성 방법
@@ -184,7 +184,7 @@
 | API 매핑 | `@GetMapping`·`@PostMapping` 만 사용. `@PutMapping`·`@DeleteMapping`·`@PatchMapping` 금지. 경로 `/api/{기능코드2}/{기능명}`, Controller 메서드명 = 기능명 (02 4.6) | 🔒 |
 | 트랜잭션 | `@Transactional` 은 Service 계층에서만 사용 (6장) | 🔒 |
 | 영속성 | **MyBatis** 사용, SQL 은 `.xml` 매퍼로 구현. **SQL 바인딩 `#{}` 만 사용, `${}` 금지**(동적 정렬 등은 허용 목록으로 제한, 5.1) | 🔒 |
-| MyBatis 매퍼 구성 | XML 파일명은 Mapper 인터페이스와 같은 base name (`FRISD0001Mapper.xml`), 위치 `resources/mapper/{기능코드}/`. `namespace` = Mapper 인터페이스 전체 이름, SQL `id` = 인터페이스 메서드명(표준 동사 사전, 2.6). 결과 매핑은 `resultMap` 사용, `map-underscore-to-camel-case` 활성(컬럼 `CUST_ID` ↔ `custId`). 목록 조회는 페이징 필수(Oracle `OFFSET … FETCH`), `SELECT *` 금지 | [제안] |
+| MyBatis 매퍼 구성 | XML 파일명은 Mapper 인터페이스와 같은 base name (`FRISD0001Mapper.xml`), 위치 `resources/mapper/{기능코드}/`. `namespace` = Mapper 인터페이스 전체 이름, SQL `id` = 인터페이스 메서드명(표준 동사 사전, 2.6). 결과 매핑은 `resultMap` 사용, `map-underscore-to-camel-case` 활성(컬럼 `CUST_ID` ↔ `custId`). 목록 조회는 페이징 필수(Oracle `OFFSET … FETCH`), `SELECT *` 금지 | 🔒 |
 | API 명세 | **Springdoc OpenAPI(Swagger UI)** 사용. **운영(`prod`) 환경에서는 비활성화**(`springdoc.api-docs.enabled=false`, `springdoc.swagger-ui.enabled=false`). 기준 문서는 API 대장(02 4.7)이며 OpenAPI 는 보조 | 🔒 |
 | DTO | 불변 객체 선호. Java `record` 사용 허용. 클래스명은 02 5장(`Dto`/`ReqDto`/`ResDto`) | 🔒 |
 | 날짜·시간 | `java.time` 사용. DB 문자열 도메인(`yyyyMMdd` 등) 변환은 `common` 유틸로 일원화 (7장) | 🔒 |
@@ -201,20 +201,25 @@
 | 항목 | 규칙 | 구분 |
 |---|---|---|
 | 대상 | TypeScript 5.9.x, React 19.3.x(함수형 컴포넌트 + Hooks), Vite 7.3.x, Node.js 24.x(LTS), npm | 🔒 |
-| 상태관리 | **서버 상태는 TanStack Query**, **클라이언트 전역 상태는 Zustand**. 서버에서 받은 데이터를 Zustand 에 복제 저장하지 않는다. Zustand 스토어는 `stores`, 라우팅 정의는 `routes` 폴더(02 5.7). 등록·수정·삭제(`POST`) 성공 후 관련 쿼리를 무효화(`invalidateQueries`) | 🔒 라이브러리 / [제안] 사용 규칙 |
-| 라우팅 | **React Router v7**. 화면 경로는 `routes` 에서 일괄 정의하고 접근 권한 검사는 서버 인가(5.2)가 최종 기준(화면 숨김은 보조) | 🔒 라이브러리 / [제안] 사용 규칙 |
+| 상태관리 | **서버 상태는 TanStack Query**, **클라이언트 전역 상태는 Zustand**(`stores`). 서버에서 받은 데이터를 Zustand 에 복제 저장하지 않는다. 단 **사용자 세션·권한·공통 코드 등 전역 참조 데이터는 `stores` 에 보관**한다 (로그인 직후·앱 기동 시 적재, 갱신은 조회 결과로 반영) [제안: 적재·갱신 방식]. 등록·수정·삭제(`POST`) 성공 후 관련 쿼리를 무효화(`invalidateQueries`) | 🔒 |
+| 라우팅 | **React Router v7**(`routes`). **메뉴 트리 기반 라우팅**, 세션 타임아웃 처리와 접근 권한 가드를 `routes` 에서 정의한다. 권한 가드는 화면 보조이며 접근 권한의 최종 기준은 서버 인가(5.2) | 🔒 |
 | 포매터 | **Prettier**: `tabWidth: 4`, `printWidth: 120`, `endOfLine: "lf"`(1장). 세미콜론 사용, 작은따옴표, `trailingComma: "all"` | 🔒 |
 | 린터 | **ESLint**(`typescript-eslint`, `react-hooks` 규칙). `no-console`, `@typescript-eslint/no-explicit-any`, `eqeqeq`, `no-unused-vars` 등 활성화 | 🔒 |
 | TypeScript | `strict: true`. `any` 사용 금지 | 🔒 |
 | 파일 명명 | 02 5장: 화면·컴포넌트 `.tsx`, 로직 `.ts`. 파일명 = 컴포넌트명 (예: `FRISP0001C.tsx`). 파일당 최상위 컴포넌트 1개 (1장) | 🔒 |
-| 폴더 | 기능코드 폴더 바로 아래 파일 배치(역할 폴더 없음), `common`·`stores`·`routes` 공통 폴더 (02 5.7) | 🔒 |
+| 폴더 | `src/` 아래 `pages`·`components`·`services`·`stores`·`routes`·`hooks`·`utils`·`constants`·`types`·`assets` (02 5.7). `pages`·`components`·`services` 는 기능코드 폴더(공통은 `common`)로 구분. `pages` 는 메뉴 코드·URL 과 1:1 매핑되는 업무 화면 단위(화면 경로 형식은 [결정 필요]) | 🔒 폴더 / [제안] 기능코드 하위 구분 |
 | 테스트 | **Vitest**. 테스트 파일은 `{대상명}.test.ts(x)` 를 허용하고 Vitest 기본 패턴을 사용한다(예: `FRISP0001C.test.tsx`, `include` 변경 불필요, 02 5.6 예외). 컴포넌트 테스트는 React Testing Library | 🔒 |
-| API 호출 | `common` 의 **단일 API 클라이언트**로만 호출. 컴포넌트에서 `fetch` 직접 호출 금지. `GET`/`POST` 만, URL `/api/{기능코드2}/{기능명}`, 세션 쿠키 전송(`credentials: 'include'`), `XSRF-TOKEN` 쿠키 값을 `X-XSRF-TOKEN` 헤더로 **자동 첨부** | 🔒 |
+| API 호출 | `services` 는 API 호출 함수와 요청/응답 DTO 매핑을 둔다. `services/common` 의 **단일 API 클라이언트**로만 호출. 컴포넌트에서 `fetch` 직접 호출 금지. `GET`/`POST` 만, URL `/api/{기능코드2}/{기능명}`, 세션 쿠키 전송(`credentials: 'include'`), `XSRF-TOKEN` 쿠키 값을 `X-XSRF-TOKEN` 헤더로 **자동 첨부** | 🔒 |
 | 응답 처리 | `success: false` 이면 `exception.errors[]` 를 필드 단위로 표시, `code`·`traceId` 기록. `401` 이면 로그인 화면으로 이동 (04 3.1·3.2) | 🔒 |
 | 보안 | `dangerouslySetInnerHTML` 금지, 토큰·민감정보를 `localStorage`·`sessionStorage` 에 저장 금지, **`VITE_` 접두 변수는 번들에 노출되므로 시크릿 금지** | 🔒 |
 | 로깅 | `console.*` 사용 금지(ESLint `no-console`). 필요 시 공통 로거 | 🔒 |
-| 표시 변환 | 마스킹·날짜 문자열(`yyyyMMdd`) 표시 변환은 `common` 유틸로 일원화 | 🔒 |
-| 빌드·CI | 패키지 매니저는 **npm**. `package-lock.json` 을 커밋하고 CI 는 `npm ci` 로 설치. `npm run lint`·`prettier --check`·`vitest run --coverage`·`vite build` | 🔒 npm / [제안] 잠금 파일·`npm ci` |
+| 표시 변환 | 마스킹·날짜 문자열(`yyyyMMdd`) 표시 변환은 `utils` 로 일원화 | 🔒 |
+| hooks | 입력값 검증(주민번호·계좌·금액)·포맷팅 공통 커스텀 훅. **프론트 검증은 사용자 편의용이며 서버 검증이 기준**(5.1). 훅 이름은 `use` 로 시작 | 🔒 |
+| utils | 금액 원화/외화 계산, 암호화, 날짜 유틸. **금액 계산은 `number` 연산을 쓰지 않고 십진 연산 라이브러리(BigDecimal.js 등)** 를 사용한다(금액 `BigDecimal` 통일, 02-1). 암호화는 검증된 라이브러리만 사용하고 자체 구현 금지(5.3). 라이브러리 선정은 [결정 필요] | 🔒 / [결정 필요] 라이브러리 |
+| constants | 오류 코드·전문 헤더 상수·정규식 패턴. **코드 값만 정의하고 메시지 문구는 서버 응답**(`message`·`errors[].message`)을 사용(3.3) | 🔒 |
+| types | 공통 응답(`success`·`code`·`message`·`traceId`·`data`·`exception`)·페이징(`pageNo`·`pageSize`·`totalCnt`) 등 공통 규격과 전역 인터페이스 (04 3.1·3.3) | 🔒 |
+| assets | CI/BI 이미지, 웹폰트, 공통 스타일시트 | 🔒 |
+| 빌드·CI | 패키지 매니저는 **npm**. `package-lock.json` 을 커밋하고 CI 는 `npm ci` 로 설치. `npm run lint`·`prettier --check`·`vitest run --coverage`·`vite build` | 🔒 |
 
 ### 8.4 02 명명규칙과의 충돌 · 예외 정리
 | 대상 | 내용 |
@@ -233,3 +238,4 @@
 | 0.4 | | | 기술스택 확정(Java 21·Spring Boot 3.x / TypeScript·React) 반영. 8장 언어별 규칙 작성, 1장 포매터·린터 확정. 8장 `[제안]` 확인 대기 |
 | 1.0 | | | **확정**. 8장 `[제안]` 일괄 확정. 클래스명·파일명 정규식 검증 제외, 환경별 시크릿 주입 방식, CSRF·Flyway 방침, FE 테스트 `.test.tsx` 허용. 잔여 `[결정 필요]`(영속성 프레임워크·FE 상태관리 등)는 MINOR 개정 |
 | 1.1 | | | 기술스택 세부 확정 반영: 버전, MyBatis XML 매퍼, TanStack Query·Zustand, React Router v7, npm, Springdoc(prod 비활성). `[제안]` 항목 확인 대기 |
+| 1.2 | | | MyBatis 매퍼·라우팅·npm 확정, FE `src/` 폴더 구조 반영(hooks·utils·constants·types·assets 규칙 추가). `[제안]`: 기능코드 하위 구분, 전역 참조 데이터 적재·갱신 방식 |

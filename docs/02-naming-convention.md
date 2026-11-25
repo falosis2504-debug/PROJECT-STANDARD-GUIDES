@@ -1,6 +1,6 @@
 # 02. 명명규칙 (Naming Convention)
 
-- 상태: **확정** | 버전: 1.3
+- 상태: **확정** | 버전: 1.4
 
 ## 목표
 코드·DB·API·파일·식별자의 이름을 일관되게 짓는 규칙을 정한다. 대상별로 **규칙 / 예시 / 금지** 를 채운다.
@@ -267,6 +267,7 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 | P | 팝업 | `FRISP0001P` |
 | M | 바닥/메인 페이지 | `FRISP0001M` |
 | C | 컴포넌트 | `FRISP0001C` |
+| Api | API 호출 함수(`services`) | `FRISP0100Api` |
 | (추가) | 필요 시 정의 | |
 
 **백엔드 (계층 B, D)**
@@ -291,7 +292,7 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 
 | 계층 | 허용 접미사 |
 |---|---|
-| P | `P`, `M`, `C` (필요 시 추가) |
+| P | `P`, `M`, `C`, `Api` (필요 시 추가) |
 | B | `Controller`, `Service`, `Dto`, `ReqDto`, `ResDto` |
 | D | `Mapper`, `Repository`, `Entity` 등 DB 연관 접미사 |
 | U | P·B·D 의 접미사 전부 |
@@ -339,28 +340,58 @@ com.falosis.finresearch
 | 폴더-파일 일치 | 파일의 기능코드·접미사가 소속 폴더와 반드시 일치 (`FRISB0001Service` → `IS/Service`) |
 | 일련번호 | 폴더가 달라도 같은 기능 단위는 동일 접두부 사용 (`IS/Controller/FRISB0001Controller`, `IS/Service/FRISB0001Service`) |
 
-**프론트엔드 (계층 P) 폴더 (확정)**
-- 파일명 **앞 4자리(시스템+기능, 예: `FRAM`)** 기준으로 기능코드 폴더(`AM`)에 둔다.
-- 역할 접미사(`P`, `M`, `C`)별 하위 폴더는 만들지 않고, 기능코드 폴더 바로 아래에 파일을 둔다. (백엔드와 달리 flat)
-- 기능코드 폴더 외에 `common`, `stores`, `routes` 등 공통 폴더를 같은 레벨에 둔다.
+**프론트엔드 (계층 P) 구조 (확정)**
+소스 루트 `src/` 아래에 다음 최상위 폴더를 둔다.
+
+| 폴더 | 역할 및 포함 내용 |
+|---|---|
+| `pages` | 메뉴 코드 및 URL 과 1:1 매핑되는 업무 화면 단위 |
+| `components` | 화면을 구성하는 재사용 UI 컴포넌트 (공통·업무별 하위 분리) |
+| `services` | 백엔드 전문(API) 호출 함수 및 요청/응답 DTO 매핑 |
+| `stores` | 사용자 세션, 권한, 공통 코드 등 전역 상태 관리 |
+| `routes` | 메뉴 트리 기반 라우팅, 세션 타임아웃 및 접근 권한 가드 |
+| `hooks` | 입력값 검증(주민번호/계좌/금액), 포맷팅 등 공통 커스텀 훅 |
+| `utils` | 금액 원화/외화 계산(BigDecimal.js 등), 암호화, 날짜 유틸리티 |
+| `constants` | 오류 코드, 전문 헤더 상수, 정규식 패턴 정의 |
+| `types` | 공통 전문 규격(`pageNo`, `pageSize`, `totalCnt`) 및 전역 인터페이스 |
+| `assets` | CI/BI 이미지, 웹폰트, 공통 스타일시트 |
+
+- `pages`·`components`·`services` 아래는 파일명 **앞 4자리(시스템+기능, 예: `FRAM`)** 기준의 **기능코드 폴더**(`AM`)로 구분하고, 공통은 `common` 폴더에 둔다. [제안]
+- `pages` 에는 메인 화면(`M`), `components` 에는 컴포넌트(`C`)와 팝업(`P`), `services` 에는 API 호출 파일(`Api`)을 둔다. 역할 접미사별 하위 폴더는 만들지 않는다. [제안]
+- `stores`·`routes`·`hooks`·`utils`·`constants`·`types`·`assets` 는 기능과 무관한 공통 영역이며 5.1 파일 명명규칙 대상이 아니다. (자유 명명, 훅은 `use` 로 시작, 스토어는 `…Store`)
+- 최상위 폴더 추가·변경은 표준 관리자 승인 후 이 표에 등록한다.
 
 ```
-finresearch-pro
-├─ AM
-│   ├─ FRAMP0001P.js
-│   ├─ FRAMP0000M.js
-│   ├─ FRAMP0100M.js
-│   ├─ FRAMP0200M.js
-│   ├─ FRAMP0201C.js
-│   └─ FRAMP0210M.js
-├─ IS
-│   ├─ FRISP1000M.js
-│   └─ FRISP1010C.js
-├─ common
+src
+├─ pages
+│   ├─ AM
+│   │   ├─ FRAMP0000M.tsx
+│   │   ├─ FRAMP0100M.tsx
+│   │   ├─ FRAMP0200M.tsx
+│   │   └─ FRAMP0210M.tsx
+│   └─ IS
+│       └─ FRISP1000M.tsx
+├─ components
+│   ├─ common               # 공통 UI
+│   ├─ AM
+│   │   ├─ FRAMP0001P.tsx   # 팝업
+│   │   └─ FRAMP0201C.tsx   # 컴포넌트
+│   └─ IS
+│       └─ FRISP1010C.tsx
+├─ services
+│   ├─ common               # 단일 API 클라이언트·공통 호출
+│   ├─ AM
+│   │   └─ FRAMP0100Api.ts
+│   └─ IS
 ├─ stores
-└─ routes            # 등
+├─ routes
+├─ hooks
+├─ utils
+├─ constants
+├─ types
+└─ assets
 ```
-- 공통 폴더는 `common`(공통 유틸·API 클라이언트), `stores`(Zustand 스토어), `routes`(React Router 정의)이며 5.1 파일 명명규칙 대상이 아니다. 공통 폴더 추가는 표준 관리자 승인 후 이 목록에 등록한다. [제안]
+- `pages` 의 화면 경로 형식과 메뉴 코드 체계는 프로젝트별로 정한다. [결정 필요]
 
 ### 5.8 그 외 파일/디렉터리
 | 대상 | 규칙 | 예시 |
@@ -408,7 +439,7 @@ finresearch-pro
 
 ## 7. 기타
 - 환경변수: `UPPER_SNAKE_CASE`, 접두 `APP_`
-- 로그 카테고리: 03 4.3 로그 종류(`app`·`error`·`access`·`audit`)와 같은 이름을 사용한다. 설정 키(`application-{환경}.yml`)는 Spring 관례의 kebab-case 를 따른다. [제안]
+- 로그 카테고리: 03 4.3 로그 종류(`app`·`error`·`access`·`audit`)와 같은 이름을 사용한다. 설정 키(`application-{환경}.yml`)는 Spring 관례의 kebab-case 를 따른다.
 - 테스트: `대상Test`, 메서드 `메서드_상황_기대결과`
 
 ## 변경이력
@@ -419,3 +450,4 @@ finresearch-pro
 | 1.1 | | | FE 테스트 파일 `.test.tsx` 허용 반영 |
 | 1.2 | | | MyBatis XML 매퍼 파일명 규칙 추가 |
 | 1.3 | | | FE 공통 폴더 목록, 로그 카테고리·설정 키 규칙 추가 `[제안]` |
+| 1.4 | | | FE `src/` 최상위 폴더 구조(pages·components·services·stores·routes·hooks·utils·constants·types·assets) 확정, `Api` 접미사 추가, 로그 카테고리·설정 키 확정 |

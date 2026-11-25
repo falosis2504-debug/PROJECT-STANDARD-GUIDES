@@ -1,6 +1,6 @@
 # 01. 공통 원칙 · 기술스택 · 아키텍처
 
-- 상태: **확정** | 버전: 1.2
+- 상태: **확정** | 버전: 1.3
 
 ## 목표
 이후 모든 표준의 전제가 되는 기본 원칙, 기술스택, 아키텍처, 환경 기준을 정리한다.
@@ -101,7 +101,7 @@
 |---|---|
 | 기능 단위 분리 | 기능코드 폴더(`IS`, `AM`, `CM`…) 아래에 역할 접미사 폴더(`Controller`, `Service`, `Dto`, `Mapper`…) (02 5.7) |
 | 공통 모듈 | `common`, `config` 는 업무 폴더와 분리. 공통 코드 변경은 영향이 크므로 승인 후 반영 (00) |
-| 프론트 구조 | 기능코드 폴더 바로 아래 파일 배치(역할 폴더 없음), `common`·`stores`·`routes` 등 공통 폴더 (02 5.7) |
+| 프론트 구조 | `src/` 아래 `pages`·`components`·`services`·`stores`·`routes`·`hooks`·`utils`·`constants`·`types`·`assets` (02 5.7). 화면·컴포넌트·서비스는 기능코드 폴더로 구분 |
 | 기능 간 의존 | 다른 기능코드의 내부 클래스 직접 참조 금지. 필요 시 공통 모듈 또는 Service 인터페이스를 통해 호출 |
 | 저장소 간 계약 | 프론트·백엔드는 **API 대장**(02 4.7)을 계약으로 하고 하위 호환을 유지 (05 1.1) |
 
@@ -157,3 +157,4 @@
 | 1.0 | | | **확정**. 언어·프레임워크·도구 확정 반영 (Java 21, Spring Boot 3.x, TypeScript·React, Gradle·Vite, Docker, Spotless·Checkstyle·JUnit 5 / Prettier·ESLint·Vitest, SLF4J+Log4j2, Redis 세션). 잔여 세부 항목(2.3)은 MINOR 개정 |
 | 1.1 | | | Spring Security 사용 명시 (세션 인증·CSRF) |
 | 1.2 | | | 버전(Spring Boot 3.5.16·Gradle 8.14.8·Node 24.x·Vite 7.3.x·React 19.3.x·TS 5.9.x), MyBatis, TanStack Query·Zustand, React Router v7, npm, Springdoc 확정 |
+| 1.3 | | | FE 폴더 구조 반영 |
