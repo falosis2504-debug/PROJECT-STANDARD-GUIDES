@@ -55,7 +55,7 @@
 | 필드 | 의미 | 비고 |
 |---|---|---|
 | `success` | 업무 처리 성공 여부 | boolean |
-| `code` | 성공 `OK`, 업무 예외 `BIZ` [제안], 시스템 오류 시 에러 코드 (예: `E0493`, 5장) | |
+| `code` | 성공 `OK`, 업무 예외는 `도메인_상황` 키(예: `COMMON_INVALID_INPUT`, 3.1.1), 시스템 오류는 에러 코드(예: `E0493`, 5장) | |
 | `message` | 사용자 표시 메시지 (로그용 상세 내용 제외, 03 3.3) | |
 | `traceId` | 추적 ID (03 4.2 로그와 동일 값) | |
 | `data` | 응답 본문. 단건은 객체, 목록은 `{대상}List` | |
@@ -64,24 +64,61 @@
 - 응답 JSON 필드명은 코드 필드와 같은 **camelCase** 이며 DB 컬럼 매핑 규칙(02 2장)을 따른다. 🔒
 - 날짜·시간은 DB 도메인 형식(`yyyyMMdd`, `yyyyMMddHHmmss`)을 그대로 사용한다. 🔒
 
-### 3.1.1 업무 예외 데이터 [제안]
-업무 예외(검증 실패·업무 규칙 위반)는 **에러 코드를 부여하지 않고** 응답값의 `exception` 에 예외 데이터를 포함한다.
+### 3.1.1 업무 예외 데이터 🔒
+업무 예외(검증 실패·업무 규칙 위반)는 **에러 코드(`E`+순번)를 부여하지 않고** 응답값의 `exception` 에 예외 데이터를 포함한다.
+구조는 **RFC 표준 메타데이터(RFC 9457 Problem Details 의 `type`·`detail`·`instance`)** 에 프론트엔드 UI 처리를 위한 `errors` 배열을 결합한 형태이다.
+
 ```json
 {
   "success": false,
-  "code": "BIZ",
-  "message": "잔액이 부족합니다.",
-  "traceId": "20261125-0002",
+  "code": "COMMON_INVALID_INPUT",
+  "message": "입력값을 다시 확인해주세요.",
+  "traceId": "20261125-0001",
   "data": null,
   "exception": {
-    "type": "VALIDATION",
-    "message": "잔액이 부족합니다.",
-    "fieldList": [ { "field": "trnAmt", "message": "출금 가능 금액을 초과했습니다." } ]
+    "type": "ValidationException",
+    "detail": "2 fields failed validation",
+    "instance": "/api/is/saveUserStrategy",
+    "errors": [
+      {
+        "field": "email",
+        "rejectedValue": "test@",
+        "reason": "INVALID_EMAIL_FORMAT",
+        "message": "올바른 이메일 형식이 아닙니다."
+      },
+      {
+        "field": "age",
+        "rejectedValue": 15,
+        "reason": "UNDER_MINIMUM_AGE",
+        "message": "만 19세 이상만 가입할 수 있습니다."
+      }
+    ]
   }
 }
 ```
-- `exception` 의 세부 구조(예외 유형 구분, 필드 단위 오류 목록, 추가 데이터)는 [결정 필요].
-- 업무 예외 메시지의 관리 방식(메시지 파일 키 체계)은 [결정 필요]. 문구 하드코딩 금지 원칙(5.2)은 동일하게 적용한다.
+| 필드 | 의미 |
+|---|---|
+| `code` | 예외의 `도메인_상황` 키. `UPPER_SNAKE_CASE` (예: `COMMON_INVALID_INPUT`) |
+| `message` | 사용자 표시용 요약 메시지 |
+| `exception.type` | 예외 유형 이름 (예: `ValidationException`) |
+| `exception.detail` | 예외 상세 설명(개발·운영 확인용 요약, 내부 정보 비노출) |
+| `exception.instance` | 예외가 발생한 요청 URL (02 4장 형식 `/api/{기능코드2}/{기능명}`) |
+| `exception.errors[]` | 필드별 오류 목록. UI 에서 필드 단위 표시에 사용 |
+| `errors[].field` | 오류 필드명 (요청 JSON 필드명, camelCase) |
+| `errors[].rejectedValue` | 거부된 입력값 |
+| `errors[].reason` | **필드별 사유 코드** (`UPPER_SNAKE_CASE`, 예: `MIN_VALUE`, `NOT_BLANK`, `INVALID_EMAIL_FORMAT`) |
+| `errors[].message` | 필드 오류 메시지(사용자 표시용) |
+
+**키 체계**
+- 예외 코드: `{도메인}_{상황}` — 예: `COMMON_INVALID_INPUT`. 도메인은 `COMMON`(공통) 또는 업무 도메인 약어(02-2 사전 약어, 프로젝트별 ✏️).
+- 필드 사유 코드: 상황을 나타내는 `UPPER_SNAKE_CASE` — 예: `MIN_VALUE`, `NOT_BLANK`, `INVALID_EMAIL_FORMAT`, `UNDER_MINIMUM_AGE`.
+- 예외 코드·사유 코드의 메시지는 메시지 파일(5.2)에서 키로 관리하며 문구를 하드코딩하지 않는다.
+
+**규칙**
+- 업무 예외는 HTTP 200 으로 응답하고 `success: false` 와 `exception` 으로 구분한다. (3.2)
+- `rejectedValue` 에 **비밀번호·주민등록번호 등 민감정보 원문을 담지 않는다.** 해당 필드는 값을 비우거나 마스킹한다. (03 5.3)
+- `errors` 는 필드와 무관한 업무 예외일 때 비어 있을 수 있다. (이 경우 `field` 대신 `message` 로 표현)
+- 예외 코드·사유 코드 목록은 메시지 코드 대장(5.2)에서 관리한다. 도메인 약어 목록은 프로젝트별 정의. ✏️
 
 ### 3.2 HTTP 상태코드 🔒
 | 상황 | HTTP | body |
@@ -138,7 +175,7 @@
 |---|---|---|
 | 저장 | 메시지 파일(YAML 등). 환경별로 분리하지 않고 소스와 함께 버전 관리 | 🔒 |
 | 파일 구성 | 공통 `messages-cm.yml`, 업무별 `messages-{기능코드 소문자}.yml` | [제안] |
-| 키 | 시스템 오류는 에러 코드(`E0493`)를 키로 사용. 업무 예외 메시지 키는 3.1.1 에서 [결정 필요] | 🔒 |
+| 키 | 시스템 오류는 에러 코드(`E0493`), 업무 예외는 예외 코드(`COMMON_INVALID_INPUT`)와 필드 사유 코드(`MIN_VALUE`)를 키로 사용 (3.1.1) | 🔒 |
 | 사용 | 코드에 문구 하드코딩 금지, **메시지 코드로만 참조** (03 3.3) | 🔒 |
 | 사용자 메시지 | 사용자가 취해야 할 조치를 포함, 내부 정보 비노출 | 🔒 |
 | 로그 메시지 | 03 4장 기준, 사용자 메시지와 별도 관리 | 🔒 |
