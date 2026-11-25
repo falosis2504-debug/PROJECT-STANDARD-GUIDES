@@ -1,6 +1,6 @@
 # 05. 형상관리 및 릴리스
 
-- 상태: **확정** | 버전: 1.0
+- 상태: **확정** | 버전: 1.1
 - 선행: 01(환경), 02(명명규칙), 03(코딩 컨벤션), 04(설계 표준)
 
 ## 작성 방법
@@ -164,6 +164,17 @@ Refs: #이슈번호
 - MR 마다 1~4단계를 실행한다. `develop`·`stage` 병합 후 개발자가 배포 시작 버튼을 누르면 빌드(5단계)와 도커 서버 배포·재기동(6단계)을 실행한다.
 - 파이프라인 정의 파일은 저장소에 커밋한다. 배포 자격증명은 CI 시크릿 저장소에서 관리한다. (03 5.4)
 
+### 7.1 저장소별 단계 명령 [제안]
+| 단계 | 백엔드 (Gradle) | 프론트엔드 (Vite) |
+|---|---|---|
+| 1. 빌드 | `./gradlew assemble` | `vite build` |
+| 2. 린트·포맷 | `./gradlew spotlessCheck checkstyleMain checkstyleTest` | `prettier --check`, `eslint` |
+| 3. 단위 테스트 | `./gradlew test jacocoTestReport` | `vitest run --coverage` |
+| 4. 정적분석 | Semgrep | Semgrep |
+| 5. 패키징 | Eclipse Temurin 기반 Docker 이미지 빌드 | 정적 파일 포함 Docker 이미지 빌드 |
+| 6. 배포 | Docker Engine(또는 Kubernetes) 배포·재기동 | 동일 |
+- 이미지 태그는 버전 또는 커밋 해시로 고정하고 `latest` 를 사용하지 않는다. 자세한 규칙은 03 8.2.
+
 ## 8. 이슈 관리
 | 항목 | 규칙 | 구분 |
 |---|---|---|
@@ -184,3 +195,4 @@ Refs: #이슈번호
 | 0.3 | | | release 브랜치 제거, stage 브랜치 추가, main 승인 한정, merge commit 전용, 프론트·백엔드 저장소 분리, GitLab CI/CD 기본 |
 | 0.5 | | | `[제안]` 항목 일괄 확정 |
 | 1.0 | | | **확정**. 잔여 `[결정 필요]`(프로젝트별·기술 확정 후 항목)는 해당 시점에 MINOR 개정으로 반영 |
+| 1.1 | | | 언어별 CI 단계 명령 추가 `[제안]` |

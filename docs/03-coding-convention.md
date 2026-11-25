@@ -1,10 +1,10 @@
 # 03. 코딩 컨벤션
 
-- 상태: 초안 | 버전: 0.3
+- 상태: 초안 | 버전: 0.4
 - 선행: 01(기술스택), 02(명명규칙)
 
 ## 작성 방법
-언어·프레임워크가 미정이므로 **언어 독립 규칙**을 이 문서에 확정하고, 언어별 세부 규칙은 8장 템플릿으로 확정 후 추가한다.
+언어·프레임워크가 미정이므로 **언어 독립 규칙**을 이 문서에 확정하고, 언어별 세부 규칙은 8장으로 확정 후 추가한다.
 - 🔒 고정 / ✏️ 가변 / `[제안]` 확정 전 안 / `[결정 필요]` 미결정
 - 규범 용어: MUST(필수) / SHOULD(권장) / MAY(선택) — 00-governance 정의 기준
 
@@ -18,7 +18,7 @@
 | 파일당 | 최상위 클래스(타입) 1개 | 🔒 |
 | import | 와일드카드 import 금지, 미사용 import 제거 | 🔒 |
 | 중괄호/블록 | 한 줄 블록도 중괄호 사용 | 🔒 |
-| 포매터/린터 | 언어 확정 후 선정, 설정 파일은 저장소에 커밋 (`.editorconfig` 공통) | [결정 필요] |
+| 포매터/린터 | BE: **Spotless · Checkstyle** / FE: **Prettier · ESLint**. 설정 파일은 저장소에 커밋 (`.editorconfig` 공통, 8장) | 🔒 |
 
 - 포맷 위반은 코드 리뷰에서 논의하지 않고 **포매터/린터로 자동 처리**한다.
 
@@ -158,20 +158,69 @@
 - 하드코딩된 환경 의존 값(URL, 경로, 계정) 금지, 설정으로 분리한다.
 - 날짜·시간 처리는 표준 라이브러리의 날짜 타입을 사용하고, DB 문자열 도메인(`yyyyMMdd`, `yyyyMMddHHmmss`)과의 변환은 공통 유틸로 일원화한다.
 
-## 8. 언어별 추가 규칙 ✏️ (언어 확정 후 작성)
-언어가 정해지면 아래 표를 복제하여 언어별로 채운다.
+## 8. 언어별 추가 규칙
+기술스택은 01 2.2 를 따른다. 표의 구분: 🔒 확정 / `[제안]` 확정 전 안 / `[결정 필요]` 미결정.
 
-| 항목 | 내용 |
+### 8.1 공통
+- 1~7장 규칙이 우선하며, 아래는 Java·TypeScript 에서의 **적용 방법**을 정한다.
+- 규칙은 가능한 한 **도구(Checkstyle·ESLint·Spotless·Prettier)로 자동 검증**하여 CI G1 게이트(06 7장)에서 차단한다. 도구로 검증하지 못하는 규칙은 MR 체크리스트(06 6.3)로 확인한다.
+- 설정 파일(Checkstyle XML, ESLint·Prettier 설정, `.editorconfig`)은 저장소에 커밋하고 변경은 표준 변경 절차(00 3장)를 따른다.
+
+### 8.2 백엔드 — Java 21 (LTS) · Spring Boot 3.x · Gradle
+| 항목 | 규칙 | 구분 |
+|---|---|---|
+| 대상 | Java 21 (LTS), Spring Boot 3.x, Gradle | 🔒 |
+| 포매터 | **Spotless** 로 포맷 자동화. 들여쓰기 4칸·120자(1장). 포맷 엔진은 `palantir-java-format` | [제안] |
+| 린터 | **Checkstyle**. 1~7장 규칙을 코드화: `AvoidStarImport`, `UnusedImports`, `EmptyCatchBlock`, `IllegalCatch`(`Exception`·`Throwable`), `NeedBraces`, `LineLength`(120), `MethodLength`(50), `ParameterNumber`(5), `NestedIfDepth`(3), `TodoComment` 형식 | 🔒 도구 / [제안] 세부 설정 |
+| 클래스명 검증 | Checkstyle `TypeName` 정규식으로 업무 클래스 명명 검증. 예: `^[A-Z]{4}[BDU]\d{4}(Controller\|Service\|Dto\|ReqDto\|ResDto\|Mapper\|Repository\|Entity)(Test)?$`. `common`·`config` 패키지는 제외 | [제안] |
+| 패키지 | `{루트}.{기능코드}.{역할}` (예: `com.falosis.finresearch.IS.Controller`). 기능코드 폴더 대문자, 역할 폴더 PascalCase 는 02 5.7 의 **Java 관례 예외** | 🔒 |
+| 문서화 주석 | Javadoc 한글. 업무 클래스 머리에 프로그램 ID·프로그램명·설명(2.1), public 메서드에 목적·파라미터·반환·예외 | 🔒 |
+| 예외 체계 | 업무 예외·시스템 예외 모두 **unchecked(`RuntimeException` 하위)** 로 정의. 공통 핸들러(`@RestControllerAdvice`, `common`)가 업무 예외 → 04 3.1.1 `exception` 응답, 시스템 예외 → `E`+순번 코드 응답으로 변환. 예외 변환 시 cause 보존 | [제안] |
+| 입력 검증 | Jakarta Bean Validation(`@NotBlank`, `@Min` 등). 위반은 `errors[].reason` 의 `COM_NOT_BLANK`·`COM_MIN_VALUE` 등으로 매핑하고 메시지는 `exception-codes.yml` 에서 조회 | [제안] |
+| 로깅 | 코드는 **SLF4J API** 만 사용하고 구현체는 **Log4j2** (`spring-boot-starter-log4j2`, 기본 Logback 제외). 로거 이름은 클래스명(프로그램 ID 포함). Trace ID 는 MDC(`traceId`)에 저장하여 로그 패턴으로 출력. 로그 종류·롤링·보관은 4.3 | 🔒 도구 / [제안] 세부 |
+| 로그 금지 | `System.out`·`System.err`·`printStackTrace()` 금지 | 🔒 |
+| Null 처리 | 컬렉션은 null 대신 **빈 컬렉션** 반환(7장). `Optional` 은 **반환 타입에만** 사용하고 필드·파라미터에는 사용하지 않음 | 🔒 빈 컬렉션 / [제안] Optional |
+| 의존성 주입 | **생성자 주입**. 필드 주입(`@Autowired` 필드) 금지 | [제안] |
+| API 매핑 | `@GetMapping`·`@PostMapping` 만 사용. `@PutMapping`·`@DeleteMapping`·`@PatchMapping` 금지. 경로 `/api/{기능코드2}/{기능명}`, Controller 메서드명 = 기능명 (02 4.6) | 🔒 |
+| 트랜잭션 | `@Transactional` 은 Service 계층에서만 사용 (6장) | 🔒 |
+| 영속성 | `Mapper` 접미사는 MyBatis 전제. **SQL 바인딩 `#{}` 만 사용, `${}` 금지**(동적 정렬 등은 허용 목록으로 제한, 5.1). 영속성 프레임워크 확정은 01 2.3 | 🔒 바인딩 / [결정 필요] 프레임워크 |
+| DTO | 불변 객체 선호. Java `record` 사용 허용. 클래스명은 02 5장(`Dto`/`ReqDto`/`ResDto`) | [제안] |
+| 날짜·시간 | `java.time` 사용. DB 문자열 도메인(`yyyyMMdd` 등) 변환은 `common` 유틸로 일원화 (7장) | 🔒 |
+| 설정 | `application-{환경}.yml` 로 환경 분리, 시크릿은 포함하지 않음(5.4) | [제안] |
+| 세션 | **Spring Session + Redis**. 세션 쿠키 `HttpOnly`·`Secure`·`SameSite` 설정, 세션 만료 시간은 프로젝트별. 세션 인증이므로 **CSRF 대응 필수** | [제안] |
+| 구조 검증 | **ArchUnit** 테스트로 계층 의존(Controller → Service → Mapper/Repository, 역방향·건너뛰기 금지) 자동 검증 | [제안] |
+| 테스트 | **JUnit 5**. 목(mock)·통합은 Spring Boot Test·Mockito, 커버리지는 JaCoCo 70% (06 3.1) | 🔒 JUnit 5 / [제안] 나머지 |
+| 빌드 | Gradle. 의존성 버전은 version catalog(`libs.versions.toml`)로 중앙 관리. CI: `./gradlew spotlessCheck checkstyleMain checkstyleTest test jacocoTestReport build` | [제안] |
+| DB 마이그레이션 | **Flyway**(Spring Boot 연동), 스크립트 `V{버전}__{설명}.sql` (04 2.1) | [제안] |
+| 컨테이너 | 이미지는 **Eclipse Temurin** 기반, 태그 고정(`latest` 금지), 비루트 사용자로 실행, 시크릿을 이미지에 포함하지 않음 | [제안] |
+| 금지 | 와일드카드 import, 필드 주입, `SELECT *`, 문자열 연결 SQL, 빈 catch, `get`·`find`·`create`·`remove` 동사 메서드(게터·세터·프레임워크 요구 메서드는 02 2장 예외) | 🔒 |
+
+### 8.3 프론트엔드 — TypeScript · React · Vite
+| 항목 | 규칙 | 구분 |
+|---|---|---|
+| 대상 | TypeScript, React(함수형 컴포넌트 + Hooks), Vite | 🔒 |
+| 포매터 | **Prettier**: `tabWidth: 4`, `printWidth: 120`, `endOfLine: "lf"`(1장). 세미콜론 사용, 작은따옴표, `trailingComma: "all"` | 🔒 4칸·120자·LF / [제안] 나머지 |
+| 린터 | **ESLint**(`typescript-eslint`, `react-hooks` 규칙). `no-console`, `@typescript-eslint/no-explicit-any`, `eqeqeq`, `no-unused-vars` 등 활성화 | 🔒 도구 / [제안] 세부 규칙 |
+| TypeScript | `strict: true`. `any` 사용 금지 | [제안] |
+| 파일 명명 | 02 5장: 화면·컴포넌트 `.tsx`, 로직 `.ts`. 파일명 = 컴포넌트명 (예: `FRISP0001C.tsx`). 파일당 최상위 컴포넌트 1개 (1장) | 🔒 |
+| 파일명 검증 | ESLint 파일명 규칙 또는 CI 스크립트로 02 5.1 정규식 검증. 예: `^[A-Z]{4}P\d{4}[PMC]\.tsx?$` (`common`·`stores`·`routes` 제외) | [제안] |
+| 폴더 | 기능코드 폴더 바로 아래 파일 배치(역할 폴더 없음), `common`·`stores`·`routes` 공통 폴더 (02 5.7) | 🔒 |
+| 테스트 | **Vitest**. 테스트 파일은 `대상명 + Test` (예: `FRISP0001CTest.tsx`, 02 5.6). Vitest `include` 를 `**/*Test.{ts,tsx}` 로 설정. 컴포넌트 테스트는 React Testing Library | 🔒 Vitest·명명 / [제안] RTL·include |
+| API 호출 | `common` 의 **단일 API 클라이언트**로만 호출. 컴포넌트에서 `fetch` 직접 호출 금지. `GET`/`POST` 만, URL `/api/{기능코드2}/{기능명}`, 세션 쿠키 전송(`credentials: 'include'`) | 🔒 GET/POST·URL / [제안] 단일 클라이언트 |
+| 응답 처리 | `success: false` 이면 `exception.errors[]` 를 필드 단위로 표시, `code`·`traceId` 기록. `401` 이면 로그인 화면으로 이동 (04 3.1·3.2) | 🔒 |
+| 보안 | `dangerouslySetInnerHTML` 금지, 토큰·민감정보를 `localStorage`·`sessionStorage` 에 저장 금지, **`VITE_` 접두 변수는 번들에 노출되므로 시크릿 금지** | 🔒 |
+| 로깅 | `console.*` 사용 금지(ESLint `no-console`). 필요 시 공통 로거 | 🔒 |
+| 표시 변환 | 마스킹·날짜 문자열(`yyyyMMdd`) 표시 변환은 `common` 유틸로 일원화 | [제안] |
+| 빌드·CI | `npm run lint`·`prettier --check`·`vitest run --coverage`·`vite build` (패키지 매니저는 01 2.3 에서 확정) | [제안] |
+| 미정 | 상태관리·라우팅 라이브러리, 패키지 매니저 | [결정 필요] |
+
+### 8.4 02 명명규칙과의 충돌 · 예외 정리
+| 대상 | 내용 |
 |---|---|
-| 대상 언어/버전 | |
-| 포매터·린터 | |
-| 문서화 주석 형식 | |
-| 예외 체계 (checked/unchecked 등) | |
-| 로깅 프레임워크 | |
-| Null 처리 기준 | |
-| 필수 규칙 | |
-| 금지 규칙 | |
-| 02번 명명규칙과의 충돌 및 예외 | |
+| Java 패키지 | 관례(전부 소문자)와 달리 기능코드 폴더(`IS`)·역할 폴더(`Controller`)를 허용 (02 5.7) |
+| getter/setter | 동사 사전의 `get` 금지 예외 (02 2장) |
+| 테스트 파일 | FE 도 `…Test.tsx` 로 통일하고 Vitest 기본 패턴(`.test.`)을 사용하지 않음 (02 5.6) |
+| 공통·설정 | `common`·`config` 는 5.1 대상 아님. 자유 명명 (02 2장) |
 
 ## 변경이력
 | 버전 | 일자 | 작성자 | 내용 |
@@ -179,3 +228,4 @@
 | 0.1 | | | 최초 작성 |
 | 0.2 | | | 언어 독립 규칙 작성 (포맷·주석·예외·로깅·보안·트랜잭션) |
 | 0.3 | | | `[제안]` 항목 일괄 확정 |
+| 0.4 | | | 기술스택 확정(Java 21·Spring Boot 3.x / TypeScript·React) 반영. 8장 언어별 규칙 작성, 1장 포매터·린터 확정. 8장 `[제안]` 확인 대기 |
