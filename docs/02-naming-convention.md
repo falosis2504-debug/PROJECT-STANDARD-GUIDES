@@ -129,16 +129,26 @@
 |---|---|---|
 | Controller | 컨트롤러 | `FRISB0001Controller` |
 | Service | 서비스 | `FRISB0001Service` |
-| Dto | 데이터 전송 객체 | `FRISB0001Dto` |
+| Dto | 데이터 전송 객체 (원칙) | `FRISB0001Dto` |
+| Req / Res | 요청/응답 구분이 필요한 경우 | `FRISB0001Req`, `FRISB0001Res` |
 | Mapper | DB 매퍼 | `FRISD0001Mapper` |
+| Repository | 저장소 | `FRISD0001Repository` |
+| Entity | 엔티티 | `FRISD0001Entity` |
 | (추가) | 필요 시 정의 | |
 
-### 5.6 정리할 사항 [결정 필요]
+### 5.6 세부 규칙 (확정)
 - 확장자는 언어에 따르며 이 규칙은 확장자 앞 이름(base name)에만 적용한다.
-- 계층 `U` 의 역할 접미사 (프론트·백엔드 접미사 중 허용 범위)
-- 계층 `D` 의 접미사 범위 (`Mapper` 외 `Repository`, `Entity` 등 추가 여부)
-- 다중 구현·테스트 파일: `FRISB0001ServiceTest` 처럼 접미사 뒤에 `Test` 를 붙이는지
-- Request/Response 를 `Dto` 로 통일할지, `ReqDto`/`ResDto` 로 구분할지
+- **계층 `U`**: 프론트·백엔드 역할 접미사를 모두 사용할 수 있다.
+- **계층 `D`**: `Mapper`, `Repository`, `Entity` 등 DB와 연관된 접미사를 사용할 수 있다.
+- **테스트 파일**: 대상 파일명 뒤에 `Test` 를 붙인다. (`FRISB0001Service` → `FRISB0001ServiceTest`)
+- **요청/응답 객체**: `Dto` 로 통일하는 것이 원칙이며, 필요한 경우에 한해 `Req`, `Res` 로 구분할 수 있다. (`FRISB0001Dto`, 구분 시 `FRISB0001Req` / `FRISB0001Res`)
+
+| 계층 | 허용 접미사 |
+|---|---|
+| P | `P`, `M`, `C` (필요 시 추가) |
+| B | `Controller`, `Service`, `Dto`, `Req`, `Res` |
+| D | `Mapper`, `Repository`, `Entity` 등 DB 연관 접미사 |
+| U | P·B·D 의 접미사 전부 |
 
 ### 5.7 그 외 파일/디렉터리
 | 대상 | 규칙 | 예시 |
