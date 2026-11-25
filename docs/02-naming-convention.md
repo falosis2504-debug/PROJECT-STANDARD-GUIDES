@@ -47,24 +47,89 @@
 API 기능명과 동일한 **표준 동사 사전(4.3)** 을 코드의 메서드명에도 사용한다. (`select`, `insert`, `update`, `delete`, `save`, `check`, `verify`, `execute` 등) `get`, `find`, `create`, `remove` 등 유사 동사는 사용하지 않는다.
 
 ## 3. 데이터베이스
-| 대상 | 규칙 | 예시 |
-|---|---|---|
-| 테이블 | `snake_case`, 접두(업무구분) [결정 필요], 단수/복수 [결정 필요] | `ord_order` |
-| 컬럼 | `snake_case` | `order_dt` |
-| PK | `pk_테이블` | |
-| FK | `fk_자식_부모_컬럼` | |
-| 인덱스 | `ix_테이블_컬럼` / 유니크 `ux_` | |
-| 시퀀스 | `sq_테이블` | |
-| 뷰 | `v_` | |
-| 공통 컬럼 | `created_at`, `created_by`, `updated_at`, `updated_by`, `use_yn`/`del_yn` | |
+DBMS 가 확정되지 않았으므로 **DBMS 독립 규칙**만 정한다. 🔒 고정 / ✏️ 가변 / [제안]은 확정 전 안.
+DBMS 종속 항목(식별자 최대 길이, 대소문자 처리, 타입 세부)은 DBMS 확정 후 보완한다.
 
-### 표준 도메인/용어 사전 [결정 필요]
-| 한글명 | 영문명 | 약어 | 타입/길이 |
+### 3.1 공통 원칙
+| 항목 | 규칙 | 구분 |
+|---|---|---|
+| 표기 | `UPPER_SNAKE_CASE` 영문 대문자 + 숫자 + `_` | [제안] |
+| 따옴표 식별자 | 대소문자 구분·특수문자·공백을 위한 따옴표 식별자 사용 금지 | 🔒 |
+| 영문 단어 | 표준 용어/약어 사전(3.5)에 등록된 단어만 사용, **단수형** | 🔒 |
+| 예약어 | DBMS 예약어를 객체명으로 사용 금지 | 🔒 |
+| 시작 문자 | 영문 | 🔒 |
+| 최대 길이 | DBMS 확정 후 정의 | [결정 필요] |
+
+### 3.2 객체별 명명규칙
+| 대상 | 규칙 | 예시 | 구분 |
 |---|---|---|---|
-| 일자 | date | dt | |
-| 코드 | code | cd | |
-| 명 | name | nm | |
-| 여부 | yn | yn | CHAR(1) |
+| 스키마(소유자) | 시스템 단위 구분, 프로젝트별 정의 | | ✏️ |
+| 테이블 | `{기능코드2}_{엔터티명}` | `IS_USER_STRATEGY` | [제안] |
+| 컬럼 | 표준 용어 조합 `{수식어}_{분류어}` (3.5) | `USER_ID`, `ORDER_DT` | 🔒 |
+| PK | `PK_{테이블명}` | `PK_IS_USER_STRATEGY` | [제안] |
+| FK | `FK_{자식테이블}_{일련번호2}` | `FK_IS_USER_STRATEGY_01` | [제안] |
+| 인덱스 | `IX_{테이블명}_{일련번호2}` | `IX_IS_USER_STRATEGY_01` | [제안] |
+| 유니크 인덱스/제약 | `UX_{테이블명}_{일련번호2}` | `UX_IS_USER_STRATEGY_01` | [제안] |
+| 시퀀스 | `SQ_{테이블명}` | `SQ_IS_USER_STRATEGY` | [제안] |
+| 뷰 | `VW_{기능코드2}_{뷰명}` | `VW_IS_STRATEGY_SUMMARY` | [제안] |
+| 임시/작업 테이블 | `TMP_{기능코드2}_{명}` | | [제안] |
+| 이력 테이블 | `{원본테이블명}_HIST` | `IS_USER_STRATEGY_HIST` | [제안] |
+| 프로시저/함수 | 가급적 사용하지 않음. 사용 시 `SP_`/`FN_{기능코드2}_{동사}{Target}` | | [제안] |
+
+- 테이블 접두는 **기능코드(5.3)** 를 사용한다. 시스템코드는 스키마로 구분한다. (여러 시스템이 한 스키마를 공유하면 `{시스템2}{기능2}_` 로 확장 [결정 필요])
+- 공유 코드/공통 업무 테이블의 접두 [결정 필요]: 예) `CM_`
+
+### 3.3 공통 컬럼 [제안]
+| 컬럼 | 의미 | 비고 |
+|---|---|---|
+| `REG_ID` / `REG_DTM` | 등록자 / 등록일시 | 필수 |
+| `MOD_ID` / `MOD_DTM` | 수정자 / 수정일시 | 필수 |
+| `USE_YN` | 사용 여부 | 해당 시 |
+| `DEL_YN` | 논리 삭제 여부 | 논리삭제 정책 시 |
+- 여부 컬럼 값(`Y`/`N`) 규칙, 논리삭제 사용 여부는 04-design-standard 에서 확정 [결정 필요].
+
+### 3.4 컬럼 분류어(접미사) [제안]
+| 분류어 | 의미 | 예시 |
+|---|---|---|
+| `ID` | 식별자 | `USER_ID` |
+| `NO` | 번호 | `ACCOUNT_NO` |
+| `SN` | 일련번호/순번 | `ORDER_SN` |
+| `CD` | 코드 | `STATUS_CD` |
+| `NM` | 명칭 | `USER_NM` |
+| `CN` | 내용 | `MEMO_CN` |
+| `DT` | 일자 (날짜) | `ORDER_DT` |
+| `DTM` | 일시 (날짜+시간) | `REG_DTM` |
+| `YN` | 여부 | `USE_YN` |
+| `AMT` | 금액 | `TRANSFER_AMT` |
+| `QTY` | 수량 | `STOCK_QTY` |
+| `RT` | 비율 | `RETURN_RT` |
+| `CNT` | 건수 | `ITEM_CNT` |
+- 같은 의미의 컬럼은 **모든 테이블에서 같은 이름·같은 타입**을 사용한다. (표준 도메인)
+
+### 3.5 표준 용어/약어 사전 ✏️
+프로젝트별로 사전을 작성하고, 사전에 없는 단어는 등록 후 사용한다.
+| 한글명 | 영문명 | 약어 | 비고 |
+|---|---|---|---|
+| 사용자 | user | USER | |
+| 이체 | transfer | TRANSFER | |
+| 일자 | date | DT | 분류어 |
+| 코드 | code | CD | 분류어 |
+| 명 | name | NM | 분류어 |
+| 여부 | yn | YN | 분류어 |
+
+- 약어 정책(전체 단어 우선 / 약어 허용 범위): [결정 필요]
+
+### 3.6 표준 도메인 ✏️ (타입은 DBMS 확정 후)
+| 도메인 | 분류어 | 의미 | 타입/길이 |
+|---|---|---|---|
+| 일자 | `DT` | `yyyyMMdd` 문자 또는 DATE 타입 | [결정 필요] |
+| 여부 | `YN` | `Y`/`N` | 1자리 문자 |
+| 금액 | `AMT` | | [DBMS 확정 후] |
+
+### 3.7 SQL(Mapper) 식별자
+- Mapper 의 SQL ID(메서드명)는 **표준 동사 사전(4.3)** 을 사용한다. (`selectUserStrategy`, `insertUserStrategy`, `updateUserStrategy`, `deleteUserStrategy`, `saveUserStrategy`)
+- Mapper 파일은 5장 규칙(`FRISD0001Mapper`)을 따르고, 파일 위치는 `{기능코드}/Mapper` 이다.
+- 파라미터명·결과 컬럼 별칭은 camelCase [제안], DB 컬럼(UPPER_SNAKE_CASE)과의 매핑 규칙은 기술 확정 후 [결정 필요].
 
 ## 4. API / URL
 언어·프레임워크와 무관한 규칙이다. 🔒 고정 / ✏️ 가변 / [제안]은 확정 전 안.
@@ -93,7 +158,7 @@ API 기능명과 동일한 **표준 동사 사전(4.3)** 을 코드의 메서드
 
 - 경로는 `/api/{기능코드2}/{기능명}` **2단계로 고정**한다. 하위 리소스 경로·path 변수는 사용하지 않고, 식별자·조건은 쿼리(GET) 또는 Request Body(POST)로 전달한다.
 - URL에 확장자, 한글, 언더스코어, 끝 `/`, 파일 명명규칙의 ID(`FRISB0001`)를 쓰지 않는다.
-- 버전은 URL에 두지 않는다. 호환되지 않는 변경은 기능명 또는 헤더로 구분한다. [제안, 결정 필요]
+- 내부 업무용이며 외부 시스템과 연결하지 않으므로 URL 버전(`v1`, `v2`)은 **현재 제외**한다. 버전 관리는 추후 고려 사항이다.
 
 ### 4.3 기능명 규칙 🔒
 **형식**: `{동사}{Target}` — 동사는 소문자 camelCase 의 첫 단어, `Target` 은 PascalCase.
@@ -137,23 +202,20 @@ API 기능명과 동일한 **표준 동사 사전(4.3)** 을 코드의 메서드
 | POST | `/api/is/selectUserStrategy` | 고객의 투자전략 정보 불러오기 |
 | POST | `/api/is/saveUserStrategy` | 고객의 투자전략 정보 저장하기 |
 
-### 4.6 쿼리/본문 규칙 [제안]
-| 대상 | 규칙 |
-|---|---|
-| 쿼리 파라미터 / JSON 필드 | camelCase |
-| 날짜/시간 | 날짜 `yyyy-MM-dd`, 일시 ISO-8601 |
-| 목록 조회 공통 | `page`, `size`, `sort` |
-- 요청/응답 객체명은 5장 `Dto`(`ReqDto`/`ResDto`) 규칙을 따른다. 공통 응답·에러 응답은 04-design-standard.md, 에러 코드는 인터페이스 ID 기준(6장).
+### 4.6 Controller 와 URL 매핑 🔒
+- 하나의 Controller(API ID)에 **여러 URL 을 매핑**할 수 있다.
+- **URL 매핑 단위는 Controller 메서드**이다. (메서드 1개 = URL 1개)
+- **Controller 메서드명은 기능명과 동일**하게 한다. (`selectUserStrategy` 메서드 ↔ `/api/is/selectUserStrategy`)
 
 ### 4.7 API 대장 (URL ↔ ID 매핑) ✏️
-| API ID(접두부) | 메서드 | URL | 한글명 | Controller | 상태 |
-|---|---|---|---|---|---|
-| FRISB0001 | POST | `/api/is/selectUserStrategy` | 투자전략 조회 | `IS/Controller/FRISB0001Controller` | |
-| FRISB0002 | POST | `/api/is/saveUserStrategy` | 투자전략 저장 | `IS/Controller/FRISB0002Controller` | |
+대장은 **Controller 메서드(URL) 단위**로 한 행씩 작성하며, 같은 Controller 의 행은 API ID 를 공유한다.
+
+| API ID(접두부) | 메서드 | URL | 한글명 | Controller | Controller 메서드 | 상태 |
+|---|---|---|---|---|---|---|
+| FRISB0001 | POST | `/api/is/selectUserStrategy` | 투자전략 조회 | `IS/Controller/FRISB0001Controller` | `selectUserStrategy` | |
+| FRISB0001 | POST | `/api/is/saveUserStrategy` | 투자전략 저장 | `IS/Controller/FRISB0001Controller` | `saveUserStrategy` | |
 
 - 대장 위치는 프로젝트별 [결정 필요].
-- Controller 클래스 내 메서드명은 기능명과 동일하게 한다. [제안]
-- 한 Controller(API ID)가 여러 URL 을 가질 수 있는지(1:1 / 1:N)는 [결정 필요].
 
 ## 5. 파일 명명규칙 (확정안, 언어·프레임워크 독립)
 
