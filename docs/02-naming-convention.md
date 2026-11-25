@@ -48,7 +48,7 @@ API 기능명과 동일한 **표준 동사 사전(4.3)** 을 코드의 메서드
 
 ## 3. 데이터베이스
 DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약어·감사 컬럼)은 프로파일 문서에 둔다.
-- 현재 프로파일: [02-1-db-profile-oracle.md](02-1-db-profile-oracle.md) (Oracle, 금융권 SI)
+- **기본(default) 프로파일: Oracle** — [02-1-db-profile-oracle.md](02-1-db-profile-oracle.md) (금융권 SI). 별도 지정이 없으면 Oracle 을 적용한다.
 - 표준 용어/약어 사전: [02-2-standard-term-dictionary.md](02-2-standard-term-dictionary.md)
 - 🔒 고정 / ✏️ 가변
 
