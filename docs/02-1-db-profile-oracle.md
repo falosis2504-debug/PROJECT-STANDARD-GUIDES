@@ -1,6 +1,6 @@
 # 02-1. DB 프로파일 — Oracle (금융권 SI)
 
-- 상태: **확정** | 버전: 1.1
+- 상태: **확정** | 버전: 1.2
 - 상위 문서: [02-naming-convention.md](02-naming-convention.md) 3장 (DBMS 독립 규칙)
 - 약어 사전: [02-2-standard-term-dictionary.md](02-2-standard-term-dictionary.md)
 
@@ -64,19 +64,19 @@ LAST_MDFCN_PGM_ID  VARCHAR2(30)    NOT NULL  -- 최종수정프로그램ID (화�
 | EAI | 대외/채널 | 대외계(FEP), EAI 인터페이스, 전문송수신 |
 | BAT | 배치 | 일/월/년 마감 배치, 정산 작업 |
 
-## 5. Java 타입 매핑 [제안]
+## 5. Java 타입 매핑 🔒 🔒
 백엔드(Java 21)에서 Oracle 도메인(2장)을 다루는 기본 매핑이다.
 | 도메인 | Oracle 타입 | Java 타입 | 비고 |
 |---|---|---|---|
 | 식별자·번호·코드·명칭·내용 | `VARCHAR2(n)` | `String` | |
 | 일련번호 | `NUMBER(10)` | `Long` | |
 | 건수·수량 | `NUMBER(10)` | `Long` | |
-| 원화금액 | `NUMBER(18, 0)` | `Long` | 금액 연산은 `BigDecimal` 사용 가능 |
-| 외화금액 | `NUMBER(18, 2)` | `BigDecimal` | |
+| 원화금액 | `NUMBER(18, 0)` | `BigDecimal` | **금액은 전부 `BigDecimal`** |
+| 외화금액 | `NUMBER(18, 2)` | `BigDecimal` | 금액은 전부 `BigDecimal` |
 | 비율/금리 | `NUMBER(10, 6)` | `BigDecimal` | |
 | 여부 | `CHAR(1)` (`Y`/`N`) | `boolean` (필드 `useYn` 등) | 변환은 공통 타입 핸들러 |
 | 일자·시각·일시 | `VARCHAR2(8/6/14)` | `String` | 변환은 `java.time` + 공통 유틸 (03 7장) |
-- 금액·비율에 `double`/`float` 사용 금지. [제안]
+- **금액(원화·외화)은 전부 `BigDecimal` 로 통일**한다. 금액·비율에 `double`/`float` 사용 금지.
 - 컬럼명(`UPPER_SNAKE_CASE`) ↔ 필드명(`camelCase`) 변환은 02 2장 규칙을 따른다.
 
 ## 변경이력
@@ -85,3 +85,4 @@ LAST_MDFCN_PGM_ID  VARCHAR2(30)    NOT NULL  -- 최종수정프로그램ID (화�
 | 0.1 | | | 최초 작성 (금융권 SI Oracle 표준 반영) |
 | 1.0 | | | **확정**. 잔여 `[결정 필요]`(프로젝트별·기술 확정 후 항목)는 해당 시점에 MINOR 개정으로 반영 |
 | 1.1 | | | Java 타입 매핑 추가 `[제안]` |
+| 1.2 | | | Java 타입 매핑 확정 (금액은 전부 BigDecimal) |

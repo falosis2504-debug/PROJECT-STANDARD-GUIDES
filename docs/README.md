@@ -19,16 +19,16 @@ SI 개발사업의 통상적인 표준화 산출물 체계(공통기준 → 명�
 | 2-1 | [02-1-db-profile-oracle.md](02-1-db-profile-oracle.md) | DB 프로파일(Oracle): 길이·타입·감사 컬럼 | 도메인/감사 컬럼 확정 | ✅ |
 | 2-2 | [02-2-standard-term-dictionary.md](02-2-standard-term-dictionary.md) | 표준 용어/약어 사전 | 프로젝트 추가 단어 등록 | ✅ |
 | 2-3 | [02-3-interface-id.md](02-3-interface-id.md) | 인터페이스 ID 명명규칙 (16자리) | 시스템/업무 코드표 프로젝트별 정의 | ✅ |
-| 3 | [03-coding-convention.md](03-coding-convention.md) | 언어별 코딩 규약, 예외·로깅·보안코딩 | 언어별 스타일, 필수/금지 규칙, 린터 설정 연계 | 🟨 |
+| 3 | [03-coding-convention.md](03-coding-convention.md) | 언어별 코딩 규약, 예외·로깅·보안코딩 | 언어별 스타일, 필수/금지 규칙, 린터 설정 연계 | ✅ |
 | 4 | [04-design-standard.md](04-design-standard.md) | DB·API·공통코드·에러코드·화면 설계 표준 | 설계 산출물 작성 기준과 예시 | ✅ |
 | 5 | [05-scm-release.md](05-scm-release.md) | Git 브랜치/커밋/리뷰/릴리스/환경 | 브랜치 전략, 커밋 규칙, 배포 절차 확정 | ✅ |
 | 6 | [06-quality-test.md](06-quality-test.md) | 단계별 테스트·코드리뷰·정적분석 기준 | 테스트 단계 정의, 리뷰 체크리스트, 품질 게이트 | ✅ |
-| 7 | [07-kickoff-checklist.md](07-kickoff-checklist.md) | 신규 프로젝트 킥오프 체크리스트·템플릿 | 이 문서 세트를 신규 프로젝트에 적용하는 절차 | 🟨 |
+| 7 | [07-kickoff-checklist.md](07-kickoff-checklist.md) | 신규 프로젝트 킥오프 체크리스트·템플릿 | 이 문서 세트를 신규 프로젝트에 적용하는 절차 | ✅ |
 | 8 | [08-deliverables-structure.md](08-deliverables-structure.md) | 산출물 폴더 구조 (SI 표준) | 업무 폴더(기능코드별) 생성 | ✅ |
 
 상태 표기: ⬜ 미착수 / 🟨 초안 / 🟦 검토 / ✅ 확정
 
-**확정 현황 (v1.0)**: 00, 01, 02, 02-1, 02-2, 02-3, 04, 05, 06, 08 확정. 03(8장 언어별 규칙 `[제안]` 확인 대기)·07은 초안.
+**확정 현황**: 00~08 전 문서 확정 (v1.0 이상). 확정 문서의 `[결정 필요]` 항목은 해당 시점에 MINOR 개정으로 반영한다.
 
 ## 권장 진행 순서와 이유
 - **2단계(명명규칙)** 가 가장 먼저 실질 가치를 낸다. 0·1단계는 짧게 끝내고 바로 2단계로 가도 된다.

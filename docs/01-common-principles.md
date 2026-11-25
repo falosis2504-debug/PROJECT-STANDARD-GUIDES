@@ -1,6 +1,6 @@
 # 01. 공통 원칙 · 기술스택 · 아키텍처
 
-- 상태: **확정** | 버전: 1.0
+- 상태: **확정** | 버전: 1.1
 
 ## 목표
 이후 모든 표준의 전제가 되는 기본 원칙, 기술스택, 아키텍처, 환경 기준을 정리한다.
@@ -64,11 +64,12 @@
 ### 2.3 세부 항목 ✏️ (프로젝트 시작 시 확정)
 | 구분 | 내용 | 상태 |
 |---|---|---|
-| 버전 | Spring Boot 마이너 버전(3.2 이상 권장 — Java 21 공식 지원 [제안]), Gradle·Vite·Node·React·TypeScript 버전 | [결정 필요] |
+| 버전 | Spring Boot 마이너 버전(3.2 이상 권장 — Java 21 공식 지원), Gradle·Vite·Node·React·TypeScript 버전 | [결정 필요] |
 | 영속성 프레임워크 | `Mapper` 접미사(02 5.5)는 MyBatis 를 전제한다. MyBatis 사용 여부 | [결정 필요] |
 | FE 패키지 매니저 | npm / pnpm / yarn | [결정 필요] |
 | FE 상태관리·라우팅 | `stores`·`routes` 폴더(02 5.7)에 사용할 라이브러리 | [결정 필요] |
 | 컨테이너 운영 | Docker Engine 기본, Kubernetes 사용 여부 | ✏️ |
+| 인증·보안 라이브러리 | **Spring Security** — 세션 인증·CSRF 보호 구현에 사용 (03 8.2) | 🔒 |
 - 위 항목이 정해지면 03 8장·02-1 등 해당 문서를 MINOR 개정으로 보완한다. (00 1.3)
 
 ## 3. 아키텍처 원칙
@@ -151,3 +152,4 @@
 | 0.2 | | | 기본 원칙·코드 체계·기술스택(확정/미정)·아키텍처·환경·비기능·주요 결정 기록 작성 |
 | 0.3 | | | `[제안]` 항목 일괄 확정 |
 | 1.0 | | | **확정**. 언어·프레임워크·도구 확정 반영 (Java 21, Spring Boot 3.x, TypeScript·React, Gradle·Vite, Docker, Spotless·Checkstyle·JUnit 5 / Prettier·ESLint·Vitest, SLF4J+Log4j2, Redis 세션). 잔여 세부 항목(2.3)은 MINOR 개정 |
+| 1.1 | | | Spring Security 사용 명시 (세션 인증·CSRF) |
