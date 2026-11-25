@@ -16,35 +16,40 @@
 각 절의 `[결정 필요]` 항목을 채운다. 케이스 표기 약어:
 `camelCase`, `PascalCase`, `snake_case`, `UPPER_SNAKE_CASE`, `kebab-case`
 
-## 1. 공통 원칙
-- 영문 사용, 의미 있는 이름, 약어는 표준 약어 사전에 등록된 것만 사용
-- 한글 발음 영문 표기(예: `sunsu`) 금지 [결정 필요]
-- 불필요한 접두/접미(`my`, `tmp`, `data`, `info` 남용) 지양
-- 길이 상한: [결정 필요]
+## 1. 공통 원칙 🔒
+- 식별자는 **영문**을 사용하고, 약어는 표준 용어/약어 사전(02-2)에 등록된 것만 사용한다.
+- 한글 발음 영문 표기(예: `sunsu`) 금지.
+- 의미 없는 접두/접미(`my`, `tmp`, `data`, `info` 남용) 지양.
+- 식별자 길이는 **40자 이내** 권장. [제안]
+- 단일 문자 변수는 반복문 인덱스(`i`, `j`)에만 허용한다. 타입을 이름에 넣는 표기(헝가리안)는 사용하지 않는다.
+- 단어는 **단수형**이 원칙이며, 복수는 `List` 접미사로 표현한다. (복수형 `s` 금지, API 4.3 과 동일)
+- 언어 관례와 충돌하는 경우의 예외는 03-coding-convention 에서 정의한다.
 
-## 2. 소스 코드
-| 대상 | 케이스 | 규칙 | 예시 | 금지 예시 |
-|---|---|---|---|---|
-| 패키지/네임스페이스 | | | `com.회사.프로젝트.모듈` | |
-| 클래스/타입 | PascalCase | 명사형 | `OrderService` | |
-| 인터페이스 | | 접두 `I` 사용 여부 [결정 필요] | | |
-| 메서드/함수 | camelCase | 동사로 시작 | `findOrderById` | |
-| 변수 | camelCase | | | |
-| 상수 | UPPER_SNAKE_CASE | | `MAX_RETRY_COUNT` | |
-| Boolean | | `is/has/can` 접두 | `isActive` | |
-| enum | | | | |
+## 2. 소스 코드 (언어 독립)
+| 대상 | 케이스 | 규칙 | 예시 |
+|---|---|---|---|
+| 패키지/네임스페이스 | 소문자 | 루트는 프로젝트별 정의(✏️). **기능코드 폴더는 대문자 2자리** 허용(5.7 예외) | `com.falosis.finresearch.IS` |
+| 업무 클래스/파일 | 5장 규칙 | `{시스템2}{기능2}{계층1}{일련번호4}{접미사}` | `FRISB0001Service` |
+| 공통/설정 클래스 | PascalCase | 명사형, 5장 대상 아님(`common`, `config`) | `BsUtils`, `MiniConfig` |
+| 인터페이스 | PascalCase | 접두 `I` 사용하지 않음 [제안] | |
+| 메서드/함수 | camelCase | `{표준 동사}{Target}` 형식 (아래 참조) | `selectUserStrategy` |
+| 변수/필드 | camelCase | 명사형, 컬렉션은 `List` 접미사 | `strategyList` |
+| 상수 | UPPER_SNAKE_CASE | | `MAX_RETRY_COUNT` |
+| Boolean | camelCase | `is` / `has` / `can` 접두 | `isUse`, `hasAuth` |
+| enum 타입 / 값 | PascalCase 단수 / UPPER_SNAKE_CASE | | `StatusType` / `NORMAL` |
 
-### 계층별 접미사 [결정 필요]
-| 계층 | 접미사 | 예시 |
-|---|---|---|
-| Controller | `Controller` | `OrderController` |
-| Service | `Service` / `ServiceImpl` | |
-| Repository/DAO | `Repository` / `Dao` | |
-| DTO | `Request` / `Response` / `Dto` | |
-| Entity/VO | `Entity` / `Vo` | |
+- 업무 클래스(Controller·Service·Dto·Mapper 등)의 이름은 5장 파일 명명규칙이 곧 클래스명이다. 계층별 접미사는 5.5·5.6 을 따른다.
+- 파라미터명·지역 변수도 변수 규칙을 따른다.
 
-### 메서드 동사 표준
+### 메서드 동사 표준 🔒
 API 기능명과 동일한 **표준 동사 사전(4.3)** 을 코드의 메서드명에도 사용한다. (`select`, `insert`, `update`, `delete`, `save`, `check`, `verify`, `execute` 등) `get`, `find`, `create`, `remove` 등 유사 동사는 사용하지 않는다.
+- Controller 메서드명 = 기능명(4.6). Service·Mapper 메서드도 같은 사전의 동사를 사용한다.
+- 단순 속성 접근자(`getter`/`setter`)는 언어·프레임워크 관례를 따르며 이 규칙의 예외이다. [제안]
+
+### DB 컬럼 ↔ 코드 필드 매핑 [제안]
+- DB 컬럼(`UPPER_SNAKE_CASE`)은 코드 필드(`camelCase`)로 단어별 변환한다. 약어는 그대로 유지한다.
+  - `CUST_ID` → `custId`, `FRST_REG_DTM` → `frstRegDtm`, `USE_YN` → `useYn`
+- 필드 이름을 임의로 풀어쓰지 않는다. (`custId` 를 `customerId` 로 쓰지 않음)
 
 ## 3. 데이터베이스
 DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약어·감사 컬럼)은 프로파일 문서에 둔다.
@@ -84,7 +89,7 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 | 시노님 | 원 객체명과 동일 | `TB_IS_USR_STRTG_M` | 계정 분리 운영 시 |
 
 - 함수/프로시저/패키지의 `{기능명}` 도 사전 약어만 사용한다. (`GET` 등 사전에 없는 단어는 등록 후 사용)
-- 업무 로직은 가급적 애플리케이션 계층에서 처리하고, DB 객체(함수·프로시저·패키지·트리거)는 필요한 경우에 한해 사용한다. [제안]
+- 업무 로직은 가급적 애플리케이션 계층에서 처리하고, DB 객체(함수·프로시저·패키지·트리거)는 필요한 경우에 한해 사용한다.
 
 ### 3.4 테이블 유형 코드 (접미 1자리) 🔒
 | 코드 | 구분 | 설명 | 예시 |
@@ -102,12 +107,12 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 - 컬럼명 = `{수식 약어}_{도메인 접미어}` (예: `CUST_ID`, `OPEN_DT`, `TRN_AMT`).
 - 도메인 접미어 및 데이터 타입은 프로파일(02-1) 2장을 따른다. 같은 의미의 컬럼은 모든 테이블에서 같은 이름·같은 도메인을 쓴다.
 - 모든 테이블의 최하단에 **감사 컬럼 6개**(`FRST_REG_*`, `LAST_MDFCN_*`)를 필수로 둔다. (02-1 3장) `*_PGM_ID` 에는 6장 프로그램 ID 를 기록한다.
-- `USE_YN`(사용 여부)은 필요한 테이블에 둔다. **논리삭제(`DEL_YN`)는 기본 필수가 아니며**, 삭제 이력은 이력 테이블(`H`)과 감사 컬럼으로 관리한다. 논리삭제가 필요한 테이블만 `DEL_YN` 을 추가한다. [제안]
+- `USE_YN`(사용 여부)은 필요한 테이블에 둔다. **논리삭제(`DEL_YN`)는 기본 필수가 아니며**, 삭제 이력은 이력 테이블(`H`)과 감사 컬럼으로 관리한다. 논리삭제가 필요한 테이블만 `DEL_YN` 을 추가한다.
 
 ### 3.6 SQL(Mapper) 식별자
 - Mapper 의 SQL ID(메서드명)는 **표준 동사 사전(4.3)** 을 사용한다. (`selectUserStrategy`, `insertUserStrategy`, `updateUserStrategy`, `deleteUserStrategy`, `saveUserStrategy`)
 - Mapper 파일은 5장 규칙(`FRISD0001Mapper`)을 따르고, 파일 위치는 `{기능코드}/Mapper` 이다.
-- DB 컬럼(UPPER_SNAKE_CASE)과 코드 필드명(camelCase)의 매핑 규칙은 기술 확정 후 [결정 필요].
+- DB 컬럼(UPPER_SNAKE_CASE)과 코드 필드명(camelCase)의 매핑 규칙은 2장 "DB 컬럼 ↔ 코드 필드 매핑"을 따른다.
 
 ## 4. API / URL
 언어·프레임워크와 무관한 규칙이다. 🔒 고정 / ✏️ 가변 / [제안]은 확정 전 안.
