@@ -1,6 +1,6 @@
 # 02. 명명규칙 (Naming Convention)
 
-- 상태: **확정** | 버전: 1.4
+- 상태: **확정** | 버전: 1.5
 
 ## 목표
 코드·DB·API·파일·식별자의 이름을 일관되게 짓는 규칙을 정한다. 대상별로 **규칙 / 예시 / 금지** 를 채운다.
@@ -28,7 +28,7 @@
 ## 2. 소스 코드 (언어 독립)
 | 대상 | 케이스 | 규칙 | 예시 |
 |---|---|---|---|
-| 패키지/네임스페이스 | 소문자 | 루트는 프로젝트별 정의(✏️). **기능코드 폴더는 대문자 2자리** 허용(5.7 예외) | `com.falosis.finresearch.IS` |
+| 패키지/네임스페이스 | 소문자 | 루트는 프로젝트별 정의(✏️). 기능코드·역할 폴더도 **모두 소문자**(5.7) | `com.falosis.finresearch.is.controller` |
 | 업무 클래스/파일 | 5장 규칙 | `{시스템2}{기능2}{계층1}{일련번호4}{접미사}` | `FRISB0001Service` |
 | 공통/설정 클래스 | PascalCase | 명사형, 5장 대상 아님(`common`, `config`) | `BsUtils`, `MiniConfig` |
 | 인터페이스 | PascalCase | 접두 `I` 사용하지 않음 | |
@@ -195,8 +195,8 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 
 | API ID(접두부) | 메서드 | URL | 한글명 | Controller | Controller 메서드 | 업무 유형 | 목표 응답 시간 | 상태 |
 |---|---|---|---|---|---|---|---|---|
-| FRISB0001 | POST | `/api/is/selectUserStrategy` | 투자전략 조회 | `IS/Controller/FRISB0001Controller` | `selectUserStrategy` | 일반 온라인 | 3초 이내 | |
-| FRISB0001 | POST | `/api/is/saveUserStrategy` | 투자전략 저장 | `IS/Controller/FRISB0001Controller` | `saveUserStrategy` | 일반 온라인 | 3초 이내 | |
+| FRISB0001 | POST | `/api/is/selectUserStrategy` | 투자전략 조회 | `is/controller/FRISB0001Controller` | `selectUserStrategy` | 일반 온라인 | 3초 이내 | |
+| FRISB0001 | POST | `/api/is/saveUserStrategy` | 투자전략 저장 | `is/controller/FRISB0001Controller` | `saveUserStrategy` | 일반 온라인 | 3초 이내 | |
 
 - **업무 유형·목표 응답 시간**은 06 3.3.1 응답 시간 기준표(초단기 실시간 / 일반 온라인 / 복합 연동·결제 / 대용량·배치성)로 분류하여 기록한다. 🔒
 
@@ -299,8 +299,9 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 
 ### 5.7 디렉터리 구조 (확정)
 **원칙**
-- 최상위(루트 패키지) 아래에 `common`, `config`, 그리고 **기능코드(2자리, 대문자) 폴더**를 둔다.
-- 기능코드 폴더 아래에는 **역할 접미사와 동일한 이름의 폴더**를 둔다. (`Controller`, `Service`, `Dto`, `Mapper` …) 폴더명은 접미사를 그대로 쓰고, 해당 접미사의 파일만 그 폴더에 둔다.
+- **모든 폴더명은 소문자**를 사용한다. (Java 패키지 관례와 일치. 파일명은 5.1 규칙의 대문자 접두부를 그대로 따른다.)
+- 최상위(루트 패키지) 아래에 `common`, `config`, 그리고 **기능코드(2자리, 소문자) 폴더**를 둔다.
+- 기능코드 폴더 아래에는 **역할 접미사를 소문자로 쓴 이름의 폴더**를 둔다. (`controller`, `service`, `dto`, `mapper` …) 해당 접미사의 파일만 그 폴더에 둔다.
 - `common`, `config` 는 업무 공통/설정 영역으로 5.1의 파일 명명규칙 적용 대상이 아니다. (자유 명명, 예: `BsUtils`, `MiniConfig`)
 - 시스템코드는 파일명(접두부)에 포함되므로 폴더에는 별도로 두지 않는다.
 
@@ -311,34 +312,34 @@ com.falosis.finresearch
 │   └─ BsUtils.java
 ├─ config
 │   └─ MiniConfig.java
-├─ IS                              # 기능코드: 투자전략
-│   ├─ Controller
+├─ is                              # 기능코드: 투자전략
+│   ├─ controller
 │   │   ├─ FRISB0001Controller.java
 │   │   └─ FRISB0100Controller.java
-│   ├─ Service
+│   ├─ service
 │   │   ├─ FRISB0001Service.java
 │   │   └─ FRISB0100Service.java
-│   ├─ Dto
+│   ├─ dto
 │   │   ├─ FRISB0000Dto.java
 │   │   ├─ FRISB0000ReqDto.java
 │   │   └─ FRISB0000ResDto.java
-│   └─ Mapper
+│   └─ mapper
 │       └─ FRISB0000Mapper.java
-└─ AM                              # 기능코드: 자산관리
-    ├─ Controller
+└─ am                              # 기능코드: 자산관리
+    ├─ controller
     │   └─ FRAMB5000Controller.java
-    └─ Service
+    └─ service
         └─ FRAMB5000Service.java
 ```
 
 **규칙 요약**
 | 항목 | 규칙 |
 |---|---|
-| 기능 폴더 | 기능코드 2자리 대문자 (`IS`, `AM` …) |
-| 역할 폴더 | 역할 접미사와 동일 (`Controller`, `Service`, `Dto`, `Mapper`, `Repository`, `Entity`). `ReqDto`/`ResDto` 는 별도 폴더 없이 `Dto` 폴더 사용 |
-| 파일 위치 | `{기능코드}/{역할접미사}/{파일명}` |
-| 폴더-파일 일치 | 파일의 기능코드·접미사가 소속 폴더와 반드시 일치 (`FRISB0001Service` → `IS/Service`) |
-| 일련번호 | 폴더가 달라도 같은 기능 단위는 동일 접두부 사용 (`IS/Controller/FRISB0001Controller`, `IS/Service/FRISB0001Service`) |
+| 기능 폴더 | 기능코드 2자리 **소문자** (`is`, `am` …) |
+| 역할 폴더 | 역할 접미사의 소문자 (`controller`, `service`, `dto`, `mapper`, `repository`, `entity`). `ReqDto`/`ResDto` 는 별도 폴더 없이 `dto` 폴더 사용 |
+| 파일 위치 | `{기능코드}/{역할}/{파일명}` (폴더는 모두 소문자) |
+| 폴더-파일 일치 | 파일의 기능코드·접미사가 소속 폴더와 반드시 일치 (`FRISB0001Service` → `is/service`) |
+| 일련번호 | 폴더가 달라도 같은 기능 단위는 동일 접두부 사용 (`is/controller/FRISB0001Controller`, `is/service/FRISB0001Service`) |
 
 **프론트엔드 (계층 P) 구조 (확정)**
 소스 루트 `src/` 아래에 다음 최상위 폴더를 둔다.
@@ -351,38 +352,39 @@ com.falosis.finresearch
 | `stores` | 사용자 세션, 권한, 공통 코드 등 전역 상태 관리 |
 | `routes` | 메뉴 트리 기반 라우팅, 세션 타임아웃 및 접근 권한 가드 |
 | `hooks` | 입력값 검증(주민번호/계좌/금액), 포맷팅 등 공통 커스텀 훅 |
-| `utils` | 금액 원화/외화 계산(BigDecimal.js 등), 암호화, 날짜 유틸리티 |
-| `constants` | 오류 코드, 전문 헤더 상수, 정규식 패턴 정의 |
+| `utils` | 금액 원화/외화 계산(**decimal.js**), 암호화, 날짜 유틸리티 |
+| `constants` | 오류 코드, 정규식 패턴 정의 |
 | `types` | 공통 전문 규격(`pageNo`, `pageSize`, `totalCnt`) 및 전역 인터페이스 |
 | `assets` | CI/BI 이미지, 웹폰트, 공통 스타일시트 |
 
-- `pages`·`components`·`services` 아래는 파일명 **앞 4자리(시스템+기능, 예: `FRAM`)** 기준의 **기능코드 폴더**(`AM`)로 구분하고, 공통은 `common` 폴더에 둔다. [제안]
-- `pages` 에는 메인 화면(`M`), `components` 에는 컴포넌트(`C`)와 팝업(`P`), `services` 에는 API 호출 파일(`Api`)을 둔다. 역할 접미사별 하위 폴더는 만들지 않는다. [제안]
+- `pages`·`components`·`services` 아래는 파일명 **앞 4자리(시스템+기능, 예: `FRAM`)** 기준의 **기능코드 폴더**(`am`)로 구분하고, 공통은 `common` 폴더에 둔다.
+- `pages` 에는 메인 화면(`M`), `components` 에는 컴포넌트(`C`)와 팝업(`P`), `services` 에는 API 호출 파일(`Api`)을 둔다. 역할 접미사별 하위 폴더는 만들지 않는다.
+- **FE 폴더명도 모두 소문자**이다. (`pages/am`, `components/common`)
 - `stores`·`routes`·`hooks`·`utils`·`constants`·`types`·`assets` 는 기능과 무관한 공통 영역이며 5.1 파일 명명규칙 대상이 아니다. (자유 명명, 훅은 `use` 로 시작, 스토어는 `…Store`)
 - 최상위 폴더 추가·변경은 표준 관리자 승인 후 이 표에 등록한다.
 
 ```
 src
 ├─ pages
-│   ├─ AM
+│   ├─ am
 │   │   ├─ FRAMP0000M.tsx
 │   │   ├─ FRAMP0100M.tsx
 │   │   ├─ FRAMP0200M.tsx
 │   │   └─ FRAMP0210M.tsx
-│   └─ IS
+│   └─ is
 │       └─ FRISP1000M.tsx
 ├─ components
 │   ├─ common               # 공통 UI
-│   ├─ AM
+│   ├─ am
 │   │   ├─ FRAMP0001P.tsx   # 팝업
 │   │   └─ FRAMP0201C.tsx   # 컴포넌트
-│   └─ IS
+│   └─ is
 │       └─ FRISP1010C.tsx
 ├─ services
 │   ├─ common               # 단일 API 클라이언트·공통 호출
-│   ├─ AM
+│   ├─ am
 │   │   └─ FRAMP0100Api.ts
-│   └─ IS
+│   └─ is
 ├─ stores
 ├─ routes
 ├─ hooks
@@ -391,7 +393,7 @@ src
 ├─ types
 └─ assets
 ```
-- `pages` 의 화면 경로 형식과 메뉴 코드 체계는 프로젝트별로 정한다. [결정 필요]
+- **화면 경로**는 `pages` 폴더 구조와 같은 소문자 경로 `/{기능코드}/{화면ID 소문자}` 로 한다. (예: `pages/is/FRISP1000M.tsx` → `/is/frisp1000m`) **메뉴 코드는 화면 ID(접두부 9자)** 를 사용한다. API URL(`/api/{기능코드}/{기능명}`)과 구분한다.
 
 ### 5.8 그 외 파일/디렉터리
 | 대상 | 규칙 | 예시 |
@@ -451,3 +453,4 @@ src
 | 1.2 | | | MyBatis XML 매퍼 파일명 규칙 추가 |
 | 1.3 | | | FE 공통 폴더 목록, 로그 카테고리·설정 키 규칙 추가 `[제안]` |
 | 1.4 | | | FE `src/` 최상위 폴더 구조(pages·components·services·stores·routes·hooks·utils·constants·types·assets) 확정, `Api` 접미사 추가, 로그 카테고리·설정 키 확정 |
+| 1.5 | | | 모든 폴더명 소문자(BE·FE), 화면 경로 형식(`/{기능코드}/{화면ID 소문자}`)·메뉴 코드 확정, `constants` 에서 전문 헤더 상수 삭제, `utils` 금액 계산 decimal.js |
