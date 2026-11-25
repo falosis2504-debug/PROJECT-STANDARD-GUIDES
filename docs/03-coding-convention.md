@@ -1,6 +1,6 @@
 # 03. 코딩 컨벤션
 
-- 상태: **확정** | 버전: 1.0
+- 상태: **확정** | 버전: 1.1
 - 선행: 01(기술스택), 02(명명규칙)
 
 ## 작성 방법
@@ -170,7 +170,7 @@
 ### 8.2 백엔드 — Java 21 (LTS) · Spring Boot 3.x · Gradle
 | 항목 | 규칙 | 구분 |
 |---|---|---|
-| 대상 | Java 21 (LTS), Spring Boot 3.x, Gradle | 🔒 |
+| 대상 | Java 21 (LTS), Spring Boot 3.5.16, Gradle 8.14.8 | 🔒 |
 | 포매터 | **Spotless** 로 포맷 자동화. 들여쓰기 4칸·120자(1장). 포맷 엔진은 `palantir-java-format` | 🔒 |
 | 린터 | **Checkstyle**. 1~7장 규칙을 코드화: `AvoidStarImport`, `UnusedImports`, `EmptyCatchBlock`, `IllegalCatch`(`Exception`·`Throwable`), `NeedBraces`, `LineLength`(120), `MethodLength`(50), `ParameterNumber`(5), `NestedIfDepth`(3), `TodoComment` 형식 | 🔒 |
 | 패키지 | `{루트}.{기능코드}.{역할}` (예: `com.falosis.finresearch.IS.Controller`). 기능코드 폴더 대문자, 역할 폴더 PascalCase 는 02 5.7 의 **Java 관례 예외** | 🔒 |
@@ -183,7 +183,9 @@
 | 의존성 주입 | **생성자 주입**. 필드 주입(`@Autowired` 필드) 금지 | 🔒 |
 | API 매핑 | `@GetMapping`·`@PostMapping` 만 사용. `@PutMapping`·`@DeleteMapping`·`@PatchMapping` 금지. 경로 `/api/{기능코드2}/{기능명}`, Controller 메서드명 = 기능명 (02 4.6) | 🔒 |
 | 트랜잭션 | `@Transactional` 은 Service 계층에서만 사용 (6장) | 🔒 |
-| 영속성 | `Mapper` 접미사는 MyBatis 전제. **SQL 바인딩 `#{}` 만 사용, `${}` 금지**(동적 정렬 등은 허용 목록으로 제한, 5.1). 영속성 프레임워크 확정은 01 2.3 | 🔒 바인딩 / [결정 필요] 프레임워크 |
+| 영속성 | **MyBatis** 사용, SQL 은 `.xml` 매퍼로 구현. **SQL 바인딩 `#{}` 만 사용, `${}` 금지**(동적 정렬 등은 허용 목록으로 제한, 5.1) | 🔒 |
+| MyBatis 매퍼 구성 | XML 파일명은 Mapper 인터페이스와 같은 base name (`FRISD0001Mapper.xml`), 위치 `resources/mapper/{기능코드}/`. `namespace` = Mapper 인터페이스 전체 이름, SQL `id` = 인터페이스 메서드명(표준 동사 사전, 2.6). 결과 매핑은 `resultMap` 사용, `map-underscore-to-camel-case` 활성(컬럼 `CUST_ID` ↔ `custId`). 목록 조회는 페이징 필수(Oracle `OFFSET … FETCH`), `SELECT *` 금지 | [제안] |
+| API 명세 | **Springdoc OpenAPI(Swagger UI)** 사용. **운영(`prod`) 환경에서는 비활성화**(`springdoc.api-docs.enabled=false`, `springdoc.swagger-ui.enabled=false`). 기준 문서는 API 대장(02 4.7)이며 OpenAPI 는 보조 | 🔒 |
 | DTO | 불변 객체 선호. Java `record` 사용 허용. 클래스명은 02 5장(`Dto`/`ReqDto`/`ResDto`) | 🔒 |
 | 날짜·시간 | `java.time` 사용. DB 문자열 도메인(`yyyyMMdd` 등) 변환은 `common` 유틸로 일원화 (7장) | 🔒 |
 | 설정 | `application-{환경}.yml` 로 환경 분리. **환경별 설정 파일에는 DB 계정·API 키 등 시크릿을 포함할 수 있다.** 단, 시크릿이 담긴 환경별 파일은 **저장소에 커밋하지 않고** 배포 환경(서버·CI 시크릿 파일)에서 주입한다(5.4). 저장소에는 시크릿 값을 비운 템플릿(`application-{환경}.yml.sample`)만 둔다 | 🔒 |
@@ -198,7 +200,9 @@
 ### 8.3 프론트엔드 — TypeScript · React · Vite
 | 항목 | 규칙 | 구분 |
 |---|---|---|
-| 대상 | TypeScript, React(함수형 컴포넌트 + Hooks), Vite | 🔒 |
+| 대상 | TypeScript 5.9.x, React 19.3.x(함수형 컴포넌트 + Hooks), Vite 7.3.x, Node.js 24.x(LTS), npm | 🔒 |
+| 상태관리 | **서버 상태는 TanStack Query**, **클라이언트 전역 상태는 Zustand**. 서버에서 받은 데이터를 Zustand 에 복제 저장하지 않는다. Zustand 스토어는 `stores`, 라우팅 정의는 `routes` 폴더(02 5.7). 등록·수정·삭제(`POST`) 성공 후 관련 쿼리를 무효화(`invalidateQueries`) | 🔒 라이브러리 / [제안] 사용 규칙 |
+| 라우팅 | **React Router v7**. 화면 경로는 `routes` 에서 일괄 정의하고 접근 권한 검사는 서버 인가(5.2)가 최종 기준(화면 숨김은 보조) | 🔒 라이브러리 / [제안] 사용 규칙 |
 | 포매터 | **Prettier**: `tabWidth: 4`, `printWidth: 120`, `endOfLine: "lf"`(1장). 세미콜론 사용, 작은따옴표, `trailingComma: "all"` | 🔒 |
 | 린터 | **ESLint**(`typescript-eslint`, `react-hooks` 규칙). `no-console`, `@typescript-eslint/no-explicit-any`, `eqeqeq`, `no-unused-vars` 등 활성화 | 🔒 |
 | TypeScript | `strict: true`. `any` 사용 금지 | 🔒 |
@@ -210,8 +214,7 @@
 | 보안 | `dangerouslySetInnerHTML` 금지, 토큰·민감정보를 `localStorage`·`sessionStorage` 에 저장 금지, **`VITE_` 접두 변수는 번들에 노출되므로 시크릿 금지** | 🔒 |
 | 로깅 | `console.*` 사용 금지(ESLint `no-console`). 필요 시 공통 로거 | 🔒 |
 | 표시 변환 | 마스킹·날짜 문자열(`yyyyMMdd`) 표시 변환은 `common` 유틸로 일원화 | 🔒 |
-| 빌드·CI | `npm run lint`·`prettier --check`·`vitest run --coverage`·`vite build` (패키지 매니저는 01 2.3 에서 확정) | 🔒 |
-| 미정 | 상태관리·라우팅 라이브러리, 패키지 매니저 | [결정 필요] |
+| 빌드·CI | 패키지 매니저는 **npm**. `package-lock.json` 을 커밋하고 CI 는 `npm ci` 로 설치. `npm run lint`·`prettier --check`·`vitest run --coverage`·`vite build` | 🔒 npm / [제안] 잠금 파일·`npm ci` |
 
 ### 8.4 02 명명규칙과의 충돌 · 예외 정리
 | 대상 | 내용 |
@@ -229,3 +232,4 @@
 | 0.3 | | | `[제안]` 항목 일괄 확정 |
 | 0.4 | | | 기술스택 확정(Java 21·Spring Boot 3.x / TypeScript·React) 반영. 8장 언어별 규칙 작성, 1장 포매터·린터 확정. 8장 `[제안]` 확인 대기 |
 | 1.0 | | | **확정**. 8장 `[제안]` 일괄 확정. 클래스명·파일명 정규식 검증 제외, 환경별 시크릿 주입 방식, CSRF·Flyway 방침, FE 테스트 `.test.tsx` 허용. 잔여 `[결정 필요]`(영속성 프레임워크·FE 상태관리 등)는 MINOR 개정 |
+| 1.1 | | | 기술스택 세부 확정 반영: 버전, MyBatis XML 매퍼, TanStack Query·Zustand, React Router v7, npm, Springdoc(prod 비활성). `[제안]` 항목 확인 대기 |

@@ -1,6 +1,6 @@
 # 01. 공통 원칙 · 기술스택 · 아키텍처
 
-- 상태: **확정** | 버전: 1.1
+- 상태: **확정** | 버전: 1.2
 
 ## 목표
 이후 모든 표준의 전제가 되는 기본 원칙, 기술스택, 아키텍처, 환경 기준을 정리한다.
@@ -53,24 +53,27 @@
 | 구분 | 선택 | 비고 |
 |---|---|---|
 | 백엔드 언어 | **Java 21 (LTS)** | 03 8.2 |
-| 백엔드 프레임워크 | **Spring Boot 3.x** | 03 8.2 |
-| 프론트엔드 언어·프레임워크 | **TypeScript · React** | 03 8.3. 파일 명명 02 5장은 언어 무관 |
-| 빌드 도구 | **Gradle (BE) · Vite (FE)** | |
+| 백엔드 프레임워크 | **Spring Boot 3.5.16** | 03 8.2 |
+| 프론트엔드 언어·프레임워크 | **TypeScript 5.9.x · React 19.3.x** | 03 8.3. 파일 명명 02 5장은 언어 무관 |
+| 프론트엔드 런타임·패키지 매니저 | **Node.js 24.x (LTS) · npm** | 03 8.3 |
+| 프론트엔드 상태관리 | **TanStack Query** (서버 상태) · **Zustand** (클라이언트 전역 상태) | 02 5.7 `stores` 폴더, 03 8.3 |
+| 프론트엔드 라우팅 | **React Router v7** | 02 5.7 `routes` 폴더, 03 8.3 |
+| 영속성 프레임워크 | **MyBatis** (SQL 은 `.xml` 매퍼로 구현) | 02 5.5 `Mapper`, 03 8.2 |
+| API 명세 도구 | **Springdoc OpenAPI (Swagger UI)** — 운영 환경 비활성화 | 04 3.3, 03 8.2 |
+| 빌드 도구 | **Gradle 8.14.8 (BE) · Vite 7.3.x (FE)** | 03 8.2·8.3 |
 | 컨테이너 이미지·런타임 | **Docker (Eclipse Temurin 이미지) · Docker Engine (또는 Kubernetes)** | 05 6.1 |
 | 포매터·린터·테스트 프레임워크 | **Spotless · Checkstyle · JUnit 5 (BE) / Prettier · ESLint · Vitest (FE)** | 03 1장, 06 3.6 |
 | 로깅 프레임워크 | **SLF4J + Log4j2** | 03 4장, 8.2 |
 | 세션 저장소·클러스터링 | **Redis (Spring Session 기반 중앙 세션 공유)** | 04 3.3. 다중 서버 시 세션 공유 |
 
-### 2.3 세부 항목 ✏️ (프로젝트 시작 시 확정)
+### 2.3 세부 항목 ✏️
 | 구분 | 내용 | 상태 |
 |---|---|---|
-| 버전 | Spring Boot 마이너 버전(3.2 이상 권장 — Java 21 공식 지원), Gradle·Vite·Node·React·TypeScript 버전 | [결정 필요] |
-| 영속성 프레임워크 | `Mapper` 접미사(02 5.5)는 MyBatis 를 전제한다. MyBatis 사용 여부 | [결정 필요] |
-| FE 패키지 매니저 | npm / pnpm / yarn | [결정 필요] |
-| FE 상태관리·라우팅 | `stores`·`routes` 폴더(02 5.7)에 사용할 라이브러리 | [결정 필요] |
-| 컨테이너 운영 | Docker Engine 기본, Kubernetes 사용 여부 | ✏️ |
+| 컨테이너 운영 | Docker Engine 기본, Kubernetes 사용 여부 | ✏️ 프로젝트별 |
 | 인증·보안 라이브러리 | **Spring Security** — 세션 인증·CSRF 보호 구현에 사용 (03 8.2) | 🔒 |
-- 위 항목이 정해지면 03 8장·02-1 등 해당 문서를 MINOR 개정으로 보완한다. (00 1.3)
+| 보조 라이브러리 | 위 목록 외 라이브러리(Springdoc·MyBatis Spring Boot Starter 등의 상세 버전)는 Spring Boot 3.5.16 BOM·호환 표를 기준으로 선정하고 `libs.versions.toml`/`package.json` 에 고정한다 | ✏️ |
+- 버전은 `Spring Boot 3.5.16`, `Gradle 8.14.8`, `Node.js 24.x (LTS)`, `Vite 7.3.x`, `React 19.3.x`, `TypeScript 5.9.x` 로 확정한다. (`x` 는 보안·버그 패치 범위 내 최신)
+- 버전 상향은 표준 변경 절차(00 3장)로 처리하고 03 8장·05 7.1 CI 명령에 영향이 있으면 함께 개정한다.
 
 ## 3. 아키텍처 원칙
 ### 3.1 시스템 구성 🔒
@@ -153,3 +156,4 @@
 | 0.3 | | | `[제안]` 항목 일괄 확정 |
 | 1.0 | | | **확정**. 언어·프레임워크·도구 확정 반영 (Java 21, Spring Boot 3.x, TypeScript·React, Gradle·Vite, Docker, Spotless·Checkstyle·JUnit 5 / Prettier·ESLint·Vitest, SLF4J+Log4j2, Redis 세션). 잔여 세부 항목(2.3)은 MINOR 개정 |
 | 1.1 | | | Spring Security 사용 명시 (세션 인증·CSRF) |
+| 1.2 | | | 버전(Spring Boot 3.5.16·Gradle 8.14.8·Node 24.x·Vite 7.3.x·React 19.3.x·TS 5.9.x), MyBatis, TanStack Query·Zustand, React Router v7, npm, Springdoc 확정 |

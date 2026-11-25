@@ -1,6 +1,6 @@
 # 02. 명명규칙 (Naming Convention)
 
-- 상태: **확정** | 버전: 1.1
+- 상태: **확정** | 버전: 1.3
 
 ## 목표
 코드·DB·API·파일·식별자의 이름을 일관되게 짓는 규칙을 정한다. 대상별로 **규칙 / 예시 / 금지** 를 채운다.
@@ -286,6 +286,7 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 - **계층 `U`**: 프론트·백엔드 역할 접미사를 모두 사용할 수 있다.
 - **계층 `D`**: `Mapper`, `Repository`, `Entity` 등 DB와 연관된 접미사를 사용할 수 있다.
 - **테스트 파일**: 대상 파일명 뒤에 `Test` 를 붙인다. (`FRISB0001Service` → `FRISB0001ServiceTest`) **프론트엔드는 Vitest 기본 패턴인 `{대상명}.test.ts(x)` 를 허용한다.** (`FRISP0001C.test.tsx`)
+- **MyBatis XML 매퍼**: Mapper 인터페이스와 같은 base name 으로 만든다. (`FRISD0001Mapper` → `FRISD0001Mapper.xml`)
 - **요청/응답 객체**: `Dto` 로 통일하는 것이 원칙이며, 필요한 경우에 한해 `ReqDto`, `ResDto` 로 구분할 수 있다. (`FRISB0000Dto`, 구분 시 `FRISB0000ReqDto` / `FRISB0000ResDto`) 구분하더라도 `Dto` 폴더에 함께 둔다.
 
 | 계층 | 허용 접미사 |
@@ -359,7 +360,7 @@ finresearch-pro
 ├─ stores
 └─ routes            # 등
 ```
-- 공통 폴더(`common`, `stores`, `routes` 등)는 5.1 파일 명명규칙 대상이 아니다. 허용 공통 폴더 목록은 프론트 기술 확정 후 [결정 필요].
+- 공통 폴더는 `common`(공통 유틸·API 클라이언트), `stores`(Zustand 스토어), `routes`(React Router 정의)이며 5.1 파일 명명규칙 대상이 아니다. 공통 폴더 추가는 표준 관리자 승인 후 이 목록에 등록한다. [제안]
 
 ### 5.8 그 외 파일/디렉터리
 | 대상 | 규칙 | 예시 |
@@ -407,7 +408,7 @@ finresearch-pro
 
 ## 7. 기타
 - 환경변수: `UPPER_SNAKE_CASE`, 접두 `APP_`
-- 로그 카테고리 / 설정 키: [결정 필요]
+- 로그 카테고리: 03 4.3 로그 종류(`app`·`error`·`access`·`audit`)와 같은 이름을 사용한다. 설정 키(`application-{환경}.yml`)는 Spring 관례의 kebab-case 를 따른다. [제안]
 - 테스트: `대상Test`, 메서드 `메서드_상황_기대결과`
 
 ## 변경이력
@@ -416,3 +417,5 @@ finresearch-pro
 | 0.1 | | | 최초 작성 |
 | 1.0 | | | **확정**. 잔여 `[결정 필요]`(프로젝트별·기술 확정 후 항목)는 해당 시점에 MINOR 개정으로 반영 |
 | 1.1 | | | FE 테스트 파일 `.test.tsx` 허용 반영 |
+| 1.2 | | | MyBatis XML 매퍼 파일명 규칙 추가 |
+| 1.3 | | | FE 공통 폴더 목록, 로그 카테고리·설정 키 규칙 추가 `[제안]` |
