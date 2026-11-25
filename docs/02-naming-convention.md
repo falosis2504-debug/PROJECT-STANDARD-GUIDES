@@ -193,12 +193,14 @@ DBMS 독립 규칙을 이 장에 두고, DBMS 전용 값(길이·타입·예약�
 ### 4.7 API 대장 (URL ↔ ID 매핑) ✏️
 대장은 **Controller 메서드(URL) 단위**로 한 행씩 작성하며, 같은 Controller 의 행은 API ID 를 공유한다.
 
-| API ID(접두부) | 메서드 | URL | 한글명 | Controller | Controller 메서드 | 상태 |
-|---|---|---|---|---|---|---|
-| FRISB0001 | POST | `/api/is/selectUserStrategy` | 투자전략 조회 | `IS/Controller/FRISB0001Controller` | `selectUserStrategy` | |
-| FRISB0001 | POST | `/api/is/saveUserStrategy` | 투자전략 저장 | `IS/Controller/FRISB0001Controller` | `saveUserStrategy` | |
+| API ID(접두부) | 메서드 | URL | 한글명 | Controller | Controller 메서드 | 업무 유형 | 목표 응답 시간 | 상태 |
+|---|---|---|---|---|---|---|---|---|
+| FRISB0001 | POST | `/api/is/selectUserStrategy` | 투자전략 조회 | `IS/Controller/FRISB0001Controller` | `selectUserStrategy` | 일반 온라인 | 3초 이내 | |
+| FRISB0001 | POST | `/api/is/saveUserStrategy` | 투자전략 저장 | `IS/Controller/FRISB0001Controller` | `saveUserStrategy` | 일반 온라인 | 3초 이내 | |
 
-- 대장 위치는 프로젝트별 [결정 필요].
+- **업무 유형·목표 응답 시간**은 06 3.3.1 응답 시간 기준표(초단기 실시간 / 일반 온라인 / 복합 연동·결제 / 대용량·배치성)로 분류하여 기록한다. 🔒
+
+- 대장 위치는 08 산출물 구조를 따른다.
 
 ## 5. 파일 명명규칙 (확정안, 언어·프레임워크 독립)
 
