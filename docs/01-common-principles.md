@@ -1,6 +1,6 @@
 # 01. 공통 원칙 · 기술스택 · 아키텍처
 
-- 상태: **확정** | 버전: 1.4
+- 상태: **확정** | 버전: 1.5
 
 ## 목표
 이후 모든 표준의 전제가 되는 기본 원칙, 기술스택, 아키텍처, 환경 기준을 정리한다.
@@ -27,7 +27,7 @@
 | 프로그램/파일 | `[시스템2][기능2][계층1][일련번호4]` + 접미사 | `FRISB0001Controller` | 02 5장 |
 | API URL | `/api/{기능코드2}/{동사}{Target}` | `/api/is/selectUserStrategy` | 02 4장 |
 | DB 테이블 | `TB_{기능2}_{엔티티}_{유형1}` | `TB_IS_USR_STRTG_M` | 02 3장 |
-| 인터페이스 ID | `IF` + 송신3 + 수신3 + 유형1 + 업무3 + 일련4 | `IFMBKCOROLON0001` | 02-3 |
+| 인터페이스 ID | `IF` + 송신3 + 수신3 + 유형1 + 업무3 + 일련4 | `IFMBKCORSLON0001` | 02-3 |
 | 에러 코드 (시스템 오류) | `E` + 순번 4자리 | `E0493` | 04 5장 |
 | 예외 코드 (업무 예외) | `{도메인}_{상황}` | `COM_INVALID_INPUT` | 04 3.1.1 |
 | 테스트 ID | `UTC-{접두부}-{NN}`, `ITC-{시스템}{기능}-{NNN}` | `ITC-FRIS-001` | 06 2장 |
@@ -43,7 +43,7 @@
 | 저장소 구조 | **프론트엔드·백엔드 별도 저장소** | 05 1장 |
 | DBMS | **Oracle (기본)** — 프로파일 02-1 | 02-1 |
 | DB 변경 관리 | 버전 SQL 스크립트, Flyway 방식 | 04 2.1 |
-| 정적분석 | **Semgrep** (GitLab CI/CD 연동), 시크릿 검사는 GitLab Secret Detection 우선 검토 | 06 7장 |
+| 정적분석 | **Semgrep** (GitLab CI/CD 연동), 시크릿 검사는 **GitLab Secret Detection** | 06 7장 |
 | 인증 | 세션 기반 (Spring Session + Redis 중앙 세션) | 04 3.3 |
 | 설정·메시지 | YAML 파일 (`exception-codes.yml`, 메시지 파일) | 04 5.2 |
 | 로그 수집 | 중앙 로그 서버 수집형 | 03 4.3 |
@@ -56,6 +56,7 @@
 | 백엔드 프레임워크 | **Spring Boot 3.5.16** | 03 8.2 |
 | 프론트엔드 언어·프레임워크 | **TypeScript 5.9.x · React 19.3.x** | 03 8.3. 파일 명명 02 5장은 언어 무관 |
 | 프론트엔드 런타임·패키지 매니저 | **Node.js 24.x (LTS) · npm** | 03 8.3 |
+| E2E·성능(부하) 테스트 | **Playwright · Grafana k6** | 06 3.6 |
 | 프론트엔드 금액 계산 | **decimal.js** | 03 8.3 `utils` |
 | 프론트엔드 상태관리 | **TanStack Query** (서버 상태) · **Zustand** (클라이언트 전역 상태) | 02 5.7 `stores` 폴더, 03 8.3 |
 | 프론트엔드 라우팅 | **React Router v7** | 02 5.7 `routes` 폴더, 03 8.3 |
@@ -160,3 +161,4 @@
 | 1.2 | | | 버전(Spring Boot 3.5.16·Gradle 8.14.8·Node 24.x·Vite 7.3.x·React 19.3.x·TS 5.9.x), MyBatis, TanStack Query·Zustand, React Router v7, npm, Springdoc 확정 |
 | 1.3 | | | FE 폴더 구조 반영 |
 | 1.4 | | | 폴더 소문자 반영, FE 금액 계산 decimal.js |
+| 1.5 | | | 시크릿 검사 도구, E2E·성능 테스트 도구 확정 |

@@ -1,6 +1,6 @@
 # 03. 코딩 컨벤션
 
-- 상태: **확정** | 버전: 1.3
+- 상태: **확정** | 버전: 1.4
 - 선행: 01(기술스택), 02(명명규칙)
 
 ## 작성 방법
@@ -202,13 +202,13 @@
 |---|---|---|
 | 대상 | TypeScript 5.9.x, React 19.3.x(함수형 컴포넌트 + Hooks), Vite 7.3.x, Node.js 24.x(LTS), npm | 🔒 |
 | 상태관리 | **서버 상태는 TanStack Query**, **클라이언트 전역 상태는 Zustand**(`stores`). 서버에서 받은 데이터를 Zustand 에 복제 저장하지 않는다. 단 **사용자 세션·권한·공통 코드 등 전역 참조 데이터는 `stores` 에 보관**한다 (로그인 직후·앱 기동 시 적재, 갱신은 조회 결과로 반영) . 등록·수정·삭제(`POST`) 성공 후 관련 쿼리를 무효화(`invalidateQueries`) | 🔒 |
-| 라우팅 | **React Router v7**(`routes`). **메뉴 트리 기반 라우팅**, 세션 타임아웃 처리와 접근 권한 가드를 `routes` 에서 정의한다. 화면 경로는 `/{기능코드}/{화면ID 소문자}` (02 5.7), 메뉴 코드는 화면 ID. 권한 가드는 화면 보조이며 접근 권한의 최종 기준은 서버 인가(5.2) | 🔒 |
+| 라우팅 | **React Router v7**(`routes`). **메뉴 트리 기반 라우팅**, 세션 타임아웃 처리와 접근 권한 가드를 `routes` 에서 정의한다. 화면 경로는 `/{기능코드}/{화면ID}` — 기능코드 디렉터리는 소문자, 화면 ID 는 대문자 파일명 그대로 (02 5.7), 메뉴 코드는 화면 ID. 권한 가드는 화면 보조이며 접근 권한의 최종 기준은 서버 인가(5.2) | 🔒 |
 | 포매터 | **Prettier**: `tabWidth: 4`, `printWidth: 120`, `endOfLine: "lf"`(1장). 세미콜론 사용, 작은따옴표, `trailingComma: "all"` | 🔒 |
 | 린터 | **ESLint**(`typescript-eslint`, `react-hooks` 규칙). `no-console`, `@typescript-eslint/no-explicit-any`, `eqeqeq`, `no-unused-vars` 등 활성화 | 🔒 |
 | TypeScript | `strict: true`. `any` 사용 금지 | 🔒 |
 | 파일 명명 | 02 5장: 화면·컴포넌트 `.tsx`, 로직 `.ts`. 파일명 = 컴포넌트명 (예: `FRISP0001C.tsx`). 파일당 최상위 컴포넌트 1개 (1장) | 🔒 |
 | 폴더 | `src/` 아래 `pages`·`components`·`services`·`stores`·`routes`·`hooks`·`utils`·`constants`·`types`·`assets` (02 5.7). `pages`·`components`·`services` 는 기능코드 폴더(공통은 `common`)로 구분. `pages` 는 메뉴 코드·URL 과 1:1 매핑되는 업무 화면 단위. 모든 폴더명 소문자(02 5.7) | 🔒 |
-| 테스트 | **Vitest**. 테스트 파일은 `{대상명}.test.ts(x)` 를 허용하고 Vitest 기본 패턴을 사용한다(예: `FRISP0001C.test.tsx`, `include` 변경 불필요, 02 5.6 예외). 컴포넌트 테스트는 React Testing Library | 🔒 |
+| 테스트 | **Vitest**. 테스트 파일은 `{대상명}.test.ts(x)` 를 허용하고 Vitest 기본 패턴을 사용한다(예: `FRISP0001C.test.tsx`, `include` 변경 불필요, 02 5.6 예외). `…Test.tsx` 접미사 형식은 FE 에서 사용하지 않는다. 컴포넌트 테스트는 React Testing Library | 🔒 |
 | API 호출 | `services` 는 API 호출 함수와 요청/응답 DTO 매핑을 둔다. `services/common` 의 **단일 API 클라이언트**로만 호출. 컴포넌트에서 `fetch` 직접 호출 금지. `GET`/`POST` 만, URL `/api/{기능코드2}/{기능명}`, 세션 쿠키 전송(`credentials: 'include'`), `XSRF-TOKEN` 쿠키 값을 `X-XSRF-TOKEN` 헤더로 **자동 첨부** | 🔒 |
 | 응답 처리 | `success: false` 이면 `exception.errors[]` 를 필드 단위로 표시, `code`·`traceId` 기록. `401` 이면 로그인 화면으로 이동 (04 3.1·3.2) | 🔒 |
 | 보안 | `dangerouslySetInnerHTML` 금지, 토큰·민감정보를 `localStorage`·`sessionStorage` 에 저장 금지, **`VITE_` 접두 변수는 번들에 노출되므로 시크릿 금지** | 🔒 |
@@ -240,3 +240,4 @@
 | 1.1 | | | 기술스택 세부 확정 반영: 버전, MyBatis XML 매퍼, TanStack Query·Zustand, React Router v7, npm, Springdoc(prod 비활성). `[제안]` 항목 확인 대기 |
 | 1.2 | | | MyBatis 매퍼·라우팅·npm 확정, FE `src/` 폴더 구조 반영(hooks·utils·constants·types·assets 규칙 추가). `[제안]`: 기능코드 하위 구분, 전역 참조 데이터 적재·갱신 방식 |
 | 1.3 | | | 폴더·패키지 모두 소문자(Java 관례 예외 삭제), FE 화면 경로·메뉴 코드, `decimal.js`, `constants` 전문 헤더 상수 삭제, `[제안]` 일괄 확정 |
+| 1.4 | | | 화면 경로 형식 정정, FE 테스트 파일명 확정 |
