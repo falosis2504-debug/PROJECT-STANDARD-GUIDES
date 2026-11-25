@@ -1,6 +1,6 @@
 # 02-1. DB 프로파일 — Oracle (금융권 SI)
 
-- 상태: 초안 | 버전: 0.1
+- 상태: **확정** | 버전: 1.0
 - 상위 문서: [02-naming-convention.md](02-naming-convention.md) 3장 (DBMS 독립 규칙)
 - 약어 사전: [02-2-standard-term-dictionary.md](02-2-standard-term-dictionary.md)
 
@@ -68,3 +68,4 @@ LAST_MDFCN_PGM_ID  VARCHAR2(30)    NOT NULL  -- 최종수정프로그램ID (화�
 | 버전 | 일자 | 작성자 | 내용 |
 |---|---|---|---|
 | 0.1 | | | 최초 작성 (금융권 SI Oracle 표준 반영) |
+| 1.0 | | | **확정**. 잔여 `[결정 필요]`(프로젝트별·기술 확정 후 항목)는 해당 시점에 MINOR 개정으로 반영 |

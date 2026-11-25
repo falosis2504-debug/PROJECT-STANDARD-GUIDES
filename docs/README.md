@@ -13,21 +13,23 @@ SI 개발사업의 통상적인 표준화 산출물 체계(공통기준 → 명�
 
 | 단계 | 문서 | 목표 | 완료 기준 | 상태 |
 |---|---|---|---|---|
-| 0 | [00-governance.md](00-governance.md) | 문서 체계·용어·변경관리 기준 수립 | 문서 상태/버전 규칙, 승인 절차 확정 | 🟨 |
+| 0 | [00-governance.md](00-governance.md) | 문서 체계·용어·변경관리 기준 수립 | 문서 상태/버전 규칙, 승인 절차 확정 | ✅ |
 | 1 | [01-common-principles.md](01-common-principles.md) | 프로젝트 공통 원칙·기술스택·아키텍처 기준 | 기술스택 표, 아키텍처 원칙, 환경 구성 확정 | 🟨 |
-| 2 | [02-naming-convention.md](02-naming-convention.md) | **명명규칙** (코드·DB·API·파일·ID) | 대상별 규칙표 + 예시 + 금지 사례 | 🟨 |
-| 2-1 | [02-1-db-profile-oracle.md](02-1-db-profile-oracle.md) | DB 프로파일(Oracle): 길이·타입·감사 컬럼 | 도메인/감사 컬럼 확정 | 🟨 |
-| 2-2 | [02-2-standard-term-dictionary.md](02-2-standard-term-dictionary.md) | 표준 용어/약어 사전 | 프로젝트 추가 단어 등록 | 🟨 |
-| 2-3 | [02-3-interface-id.md](02-3-interface-id.md) | 인터페이스 ID 명명규칙 (16자리) | 시스템/업무 코드표 프로젝트별 정의 | 🟨 |
+| 2 | [02-naming-convention.md](02-naming-convention.md) | **명명규칙** (코드·DB·API·파일·ID) | 대상별 규칙표 + 예시 + 금지 사례 | ✅ |
+| 2-1 | [02-1-db-profile-oracle.md](02-1-db-profile-oracle.md) | DB 프로파일(Oracle): 길이·타입·감사 컬럼 | 도메인/감사 컬럼 확정 | ✅ |
+| 2-2 | [02-2-standard-term-dictionary.md](02-2-standard-term-dictionary.md) | 표준 용어/약어 사전 | 프로젝트 추가 단어 등록 | ✅ |
+| 2-3 | [02-3-interface-id.md](02-3-interface-id.md) | 인터페이스 ID 명명규칙 (16자리) | 시스템/업무 코드표 프로젝트별 정의 | ✅ |
 | 3 | [03-coding-convention.md](03-coding-convention.md) | 언어별 코딩 규약, 예외·로깅·보안코딩 | 언어별 스타일, 필수/금지 규칙, 린터 설정 연계 | 🟨 |
-| 4 | [04-design-standard.md](04-design-standard.md) | DB·API·공통코드·에러코드·화면 설계 표준 | 설계 산출물 작성 기준과 예시 | 🟨 |
-| 5 | [05-scm-release.md](05-scm-release.md) | Git 브랜치/커밋/리뷰/릴리스/환경 | 브랜치 전략, 커밋 규칙, 배포 절차 확정 | 🟨 |
-| 6 | [06-quality-test.md](06-quality-test.md) | 단계별 테스트·코드리뷰·정적분석 기준 | 테스트 단계 정의, 리뷰 체크리스트, 품질 게이트 | 🟨 |
+| 4 | [04-design-standard.md](04-design-standard.md) | DB·API·공통코드·에러코드·화면 설계 표준 | 설계 산출물 작성 기준과 예시 | ✅ |
+| 5 | [05-scm-release.md](05-scm-release.md) | Git 브랜치/커밋/리뷰/릴리스/환경 | 브랜치 전략, 커밋 규칙, 배포 절차 확정 | ✅ |
+| 6 | [06-quality-test.md](06-quality-test.md) | 단계별 테스트·코드리뷰·정적분석 기준 | 테스트 단계 정의, 리뷰 체크리스트, 품질 게이트 | ✅ |
 | 7 | [07-kickoff-checklist.md](07-kickoff-checklist.md) | 신규 프로젝트 킥오프 체크리스트·템플릿 | 이 문서 세트를 신규 프로젝트에 적용하는 절차 | 🟨 |
-| 8 | [08-deliverables-structure.md](08-deliverables-structure.md) | 산출물 폴더 구조 (SI 표준) | 업무 폴더(기능코드별) 생성 | 🟨 |
+| 8 | [08-deliverables-structure.md](08-deliverables-structure.md) | 산출물 폴더 구조 (SI 표준) | 업무 폴더(기능코드별) 생성 | ✅ |
 | 9 | [09-proposal-review-checklist.md](09-proposal-review-checklist.md) | `[제안]` 항목 일괄 점검 (작업 문서) | 38건 모두 결정 | ✅ |
 
 상태 표기: ⬜ 미착수 / 🟨 초안 / 🟦 검토 / ✅ 확정
+
+**확정 현황 (v1.0)**: 00, 02, 02-1, 02-2, 02-3, 04, 05, 06, 08 확정. 01(기술스택 미정)·03(8장 언어별 규칙 미작성)·07(적용 체크리스트)은 초안이며, 언어·프레임워크 확정 후 보완하여 확정한다.
 
 ## 권장 진행 순서와 이유
 - **2단계(명명규칙)** 가 가장 먼저 실질 가치를 낸다. 0·1단계는 짧게 끝내고 바로 2단계로 가도 된다.
