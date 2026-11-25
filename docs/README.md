@@ -25,6 +25,7 @@ SI 개발사업의 통상적인 표준화 산출물 체계(공통기준 → 명�
 | 6 | [06-quality-test.md](06-quality-test.md) | 단계별 테스트·코드리뷰·정적분석 기준 | 테스트 단계 정의, 리뷰 체크리스트, 품질 게이트 | 🟨 |
 | 7 | [07-kickoff-checklist.md](07-kickoff-checklist.md) | 신규 프로젝트 킥오프 체크리스트·템플릿 | 이 문서 세트를 신규 프로젝트에 적용하는 절차 | 🟨 |
 | 8 | [08-deliverables-structure.md](08-deliverables-structure.md) | 산출물 폴더 구조 (SI 표준) | 업무 폴더(기능코드별) 생성 | 🟨 |
+| 9 | [09-proposal-review-checklist.md](09-proposal-review-checklist.md) | `[제안]` 항목 일괄 점검 (작업 문서) | 38건 모두 결정 | 🟨 |
 
 상태 표기: ⬜ 미착수 / 🟨 초안 / 🟦 검토 / ✅ 확정
 
